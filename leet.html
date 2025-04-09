@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leet Clock</title>
+  <style>
+    body {
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    svg {
+      background-color: black;
+    }
+    .background {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      background: radial-gradient(circle, rgba(0,255,0,0.2) 0%, rgba(0,0,0,1) 100%);
+      animation: pulse 5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.9; }
+      50% { opacity: 0.5; }
+      100% { opacity: 0.9; }
+    }
+    #quote {
+      position: absolute;
+      bottom: 20px;
+      color: lime;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+  <svg id="leetClock" width="1024" height="768" viewBox="0 0 400 400">
+    <!-- Clock face -->
+    <circle cx="200" cy="200" r="180" stroke="lime" stroke-width="4" fill="none" />
+
+    <!-- Hour and minute labels -->
+    <g id="labels" fill="lime" font-size="14" font-family="monospace" text-anchor="middle" dominant-baseline="middle"></g>
+
+    <!-- Minute hand -->
+    <line id="minuteHand" x1="200" y1="200" x2="200" y2="50" stroke="lime" stroke-width="3" />
+    <!-- Hour hand -->
+    <line id="hourHand" x1="200" y1="200" x2="200" y2="100" stroke="lime" stroke-width="6" />
+    <!-- Center dot -->
+    <circle cx="200" cy="200" r="5" fill="lime" />
+  </svg>
+
+  <div id="quote"></div>
+
+  <audio id="sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+  <script>
+    const centerX = 200;
+    const centerY = 200;
+    const hourRadius = 150;
+    const minuteRadius = 170;
+
+    const hourCount = 13;
+    const minuteCount = 37;
+    const labelGroup = document.getElementById("labels");
+
+    // Draw hour labels
+    for (let i = 0; i < hourCount; i++) {
+      const angle = ((360 / hourCount) * i - 90) * (Math.PI / 180);
+      const x = centerX + hourRadius * Math.cos(angle);
+      const y = centerY + hourRadius * Math.sin(angle);
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", x);
+      text.setAttribute("y", y);
+      text.textContent = i.toString();
+      labelGroup.appendChild(text);
+    }
+
+    // Draw minute labels
+    for (let i = 0; i < minuteCount; i++) {
+      const angle = ((360 / minuteCount) * i - 90) * (Math.PI / 180);
+      const x = centerX + minuteRadius * Math.cos(angle);
+      const y = centerY + minuteRadius * Math.sin(angle);
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", x);
+      text.setAttribute("y", y);
+      text.setAttribute("font-size", "10");
+      text.textContent = i.toString();
+      labelGroup.appendChild(text);
+    }
+
+    const quotes = [
+      "All your base are belong to us.",
+      "I'm in your clock, showing your time.",
+      "Leetness is a mindset.",
+      "Hack the planet.",
+      "There is no spoon... just time.",
+      "Kello 13:37 - aikaa olla leet."
+    ];
+
+    function getRandomQuote() {
+      return quotes[Math.floor(Math.random() * quotes.length)];
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const realHours = now.getHours();
+      const realMinutes = now.getMinutes();
+      const realSeconds = now.getSeconds();
+
+      // Map real time to leet time so that 13:37 in real time => 13:37 in leet time
+      const totalRealMinutes = realHours * 60 + realMinutes + realSeconds / 60;
+      const totalLeetMinutes = ((totalRealMinutes - (13 * 60 + 37) + 1440) % 1440);
+      const leetHour = Math.floor((totalLeetMinutes / 1440) * hourCount);
+      const leetMinute = Math.floor(((totalLeetMinutes % (1440 / hourCount)) / (1440 / hourCount)) * minuteCount);
+
+      const minuteAngle = (leetMinute / minuteCount) * 360;
+      const hourAngle = ((leetHour + leetMinute / minuteCount) / hourCount) * 360;
+
+      const setHand = (id, angleDeg, length) => {
+        const angleRad = (angleDeg - 90) * (Math.PI / 180);
+        const x2 = centerX + length * Math.cos(angleRad);
+        const y2 = centerY + length * Math.sin(angleRad);
+        const hand = document.getElementById(id);
+        hand.setAttribute("x2", x2);
+        hand.setAttribute("y2", y2);
+      };
+
+      setHand("minuteHand", minuteAngle, 150);
+      setHand("hourHand", hourAngle, 100);
+
+      // Leet alert
+      if (realHours === 13 && realMinutes === 37 && realSeconds === 0) {
+        document.getElementById("sound").play();
+        document.getElementById("quote").textContent = "\u{1F389} 13:37 Achieved! Stay leet. \u{1F389}";
+      }
+    }
+
+    document.getElementById("quote").textContent = getRandomQuote();
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>

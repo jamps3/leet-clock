@@ -8,7 +8,7 @@
       :root {
         --bg-color: black;
         --text-color: lime;
-        --text-color-light: #333; /* Darker text for light theme */
+        --text-color-light: #333;
       }
       body {
         background-color: var(--bg-color);
@@ -452,7 +452,7 @@
           );
         } else if (mode === "real") {
           customHour = realHours % 12;
-          // if (customHour === 0) customHour = 12;
+          if (customHour === 0) customHour = 12;
           customMinute = realMinutes;
           customSecond = realSeconds;
         } else if (mode === "real24") {
@@ -563,25 +563,13 @@
         const modes = Object.keys(modeSettings);
         const currentIndex = modes.indexOf(mode);
         mode = modes[(currentIndex + 1) % modes.length];
-        localStorage.setItem("leetClockMode", mode); // 🔒 Save mode
+        localStorage.setItem("leetClockMode", mode);
         drawLabels(modeSettings[mode].hours, modeSettings[mode].minutes);
         document.getElementById(
           "toggleMode"
         ).textContent = `Mode: ${modeSettings[mode].label}`;
         updateClock();
       });
-
-      document
-        .getElementById("resetLocationBtn")
-        .addEventListener("click", () => {
-          window.userLocation = { latitude: 60.1699, longitude: 24.9384 };
-          localStorage.removeItem("latitude");
-          localStorage.removeItem("longitude");
-          document.getElementById("latInput").value = "";
-          document.getElementById("lonInput").value = "";
-          document.getElementById("citySelect").value = "";
-          updateClock();
-        });
 
       const savedMode = localStorage.getItem("leetClockMode");
       if (savedMode && modeSettings[savedMode]) {
@@ -601,7 +589,6 @@
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             };
-            // Initial call with updated location
             updateClock();
           },
           (error) => {
@@ -614,9 +601,9 @@
 
       updateQuote();
       setInterval(updateQuote, 3600000);
-      setInterval(updateClock, 10); // Update every second
+      setInterval(updateClock, 1000);
       updateClock();
-      // Load saved location
+
       const savedLat = localStorage.getItem("latitude");
       const savedLon = localStorage.getItem("longitude");
       if (savedLat && savedLon) {
@@ -628,7 +615,6 @@
         document.getElementById("lonInput").value = savedLon;
       }
 
-      // Handle Set button
       document
         .getElementById("setLocationBtn")
         .addEventListener("click", () => {
@@ -638,7 +624,7 @@
             window.userLocation = { latitude: lat, longitude: lon };
             localStorage.setItem("latitude", lat);
             localStorage.setItem("longitude", lon);
-            updateClock(); // refresh with new location
+            updateClock();
           } else {
             alert("Please enter valid coordinates.");
           }
@@ -675,6 +661,18 @@
           updateClock();
         }
       });
+
+      document
+        .getElementById("resetLocationBtn")
+        .addEventListener("click", () => {
+          window.userLocation = { latitude: 60.1699, longitude: 24.9384 };
+          localStorage.removeItem("latitude");
+          localStorage.removeItem("longitude");
+          document.getElementById("latInput").value = "";
+          document.getElementById("lonInput").value = "";
+          document.getElementById("citySelect").value = "";
+          updateClock();
+        });
     </script>
   </body>
 </html>

@@ -550,7 +550,7 @@
 
       updateQuote();
       setInterval(updateQuote, 3600000);
-      setInterval(updateClock, 100);
+      setInterval(updateClock, 1000); // Update every second
       updateClock();
       // Load saved location
       const savedLat = localStorage.getItem("latitude");

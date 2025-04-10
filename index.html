@@ -417,6 +417,14 @@
         const realHours = now.getHours();
         const realMinutes = now.getMinutes();
         const realSeconds = now.getSeconds();
+        const realMilliseconds = now.getMilliseconds();
+
+        // Calculate total real seconds since midnight, including milliseconds
+        const nowInSeconds =
+          realHours * 3600 +
+          realMinutes * 60 +
+          realSeconds +
+          realMilliseconds / 1000;
 
         let customHour, customMinute, customSecond;
         const settings = modeSettings[mode];
@@ -460,9 +468,7 @@
           customMinute = realMinutes;
           customSecond = realSeconds;
         } else {
-          const secondsInDay = 24 * 60 * 60;
-          const nowInSeconds =
-            realHours * 3600 + realMinutes * 60 + realSeconds;
+          const secondsInDay = 24 * 60 * 60; // 86,400 seconds
           const offset = settings.offset || 0;
           const adjustedSeconds =
             (nowInSeconds - offset + secondsInDay) % secondsInDay;
@@ -470,12 +476,25 @@
 
           const hourCount = settings.hours;
           const minuteCount = settings.minutes;
+          const secondCount = mode === "sata" ? 100 : 60; // Sata mode has 100 seconds per minute
+          const totalSataSeconds =
+            mode === "sata"
+              ? hourCount * minuteCount * secondCount
+              : hourCount * minuteCount * 60;
+
           const totalMinutes = fractionOfDay * (hourCount * minuteCount);
           customHour = Math.floor(totalMinutes / minuteCount) % hourCount;
           customMinute = Math.floor(totalMinutes % minuteCount);
-          customSecond = Math.floor(
-            (fractionOfDay * (hourCount * minuteCount * 60)) % 60
-          );
+          if (mode === "sata") {
+            // For Sata mode, calculate seconds based on 100 seconds per minute
+            const totalSeconds = fractionOfDay * totalSataSeconds;
+            customSecond = Math.floor(totalSeconds % secondCount);
+          } else {
+            customSecond = Math.floor(
+              (fractionOfDay * (hourCount * minuteCount * secondCount)) %
+                secondCount
+            );
+          }
         }
 
         let minuteAngle, hourAngle, secondAngle;
@@ -486,10 +505,11 @@
         } else {
           const hourCount = settings.hours;
           const minuteCount = settings.minutes;
+          const secondCount = mode === "sata" ? 100 : 60;
           minuteAngle = (customMinute / minuteCount) * 360;
           hourAngle =
             ((customHour + customMinute / minuteCount) / hourCount) * 360;
-          secondAngle = (customSecond / 60) * 360;
+          secondAngle = (customSecond / secondCount) * 360;
         }
 
         const setHand = (id, angleDeg, length) => {
@@ -510,6 +530,8 @@
         }: ${customHour.toString().padStart(2, "0")}:${customMinute
           .toString()
           .padStart(2, "0")}${
+          mode === "sata" ? `:${customSecond.toString().padStart(2, "0")}` : ""
+        }${
           mode === "real" || mode === "relative"
             ? realHours >= 12
               ? " PM"
@@ -601,7 +623,7 @@
 
       updateQuote();
       setInterval(updateQuote, 3600000);
-      setInterval(updateClock, 1000);
+      setInterval(updateClock, 10);
       updateClock();
 
       const savedLat = localStorage.getItem("latitude");

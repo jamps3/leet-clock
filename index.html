@@ -83,8 +83,12 @@
       }
       #digital {
         font-size: 1.5rem;
-        margin-top: 1rem;
         color: var(--text-color);
+        position: absolute;
+        bottom: 80px; /* Adjust this value to position it between the clock and controls */
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
       }
       #toggleTheme,
       #toggleMode {
@@ -437,7 +441,6 @@
         const realSeconds = now.getSeconds();
         const realMilliseconds = now.getMilliseconds();
 
-        // Calculate total real seconds since midnight, including milliseconds
         const nowInSeconds =
           realHours * 3600 +
           realMinutes * 60 +
@@ -486,7 +489,7 @@
           customMinute = realMinutes;
           customSecond = realSeconds;
         } else {
-          const secondsInDay = 24 * 60 * 60; // 86,400 seconds
+          const secondsInDay = 24 * 60 * 60;
           const offset = settings.offset || 0;
           const adjustedSeconds =
             (nowInSeconds - offset + secondsInDay) % secondsInDay;
@@ -494,25 +497,14 @@
 
           const hourCount = settings.hours;
           const minuteCount = settings.minutes;
-          const secondCount = mode === "sata" ? 100 : 60; // Sata mode has 100 seconds per minute
-          const totalSataSeconds =
-            mode === "sata"
-              ? hourCount * minuteCount * secondCount
-              : hourCount * minuteCount * 60;
+          const secondCount = mode === "sata" ? 100 : mode === "leet" ? 37 : 60;
+          const totalCustomSeconds = hourCount * minuteCount * secondCount;
 
           const totalMinutes = fractionOfDay * (hourCount * minuteCount);
           customHour = Math.floor(totalMinutes / minuteCount) % hourCount;
           customMinute = Math.floor(totalMinutes % minuteCount);
-          if (mode === "sata") {
-            // For Sata mode, calculate seconds based on 100 seconds per minute
-            const totalSeconds = fractionOfDay * totalSataSeconds;
-            customSecond = Math.floor(totalSeconds % secondCount);
-          } else {
-            customSecond = Math.floor(
-              (fractionOfDay * (hourCount * minuteCount * secondCount)) %
-                secondCount
-            );
-          }
+          const totalSeconds = fractionOfDay * totalCustomSeconds;
+          customSecond = Math.floor(totalSeconds % secondCount);
         }
 
         let minuteAngle, hourAngle, secondAngle;
@@ -523,7 +515,7 @@
         } else {
           const hourCount = settings.hours;
           const minuteCount = settings.minutes;
-          const secondCount = mode === "sata" ? 100 : 60;
+          const secondCount = mode === "sata" ? 100 : mode === "leet" ? 37 : 60;
           minuteAngle = (customMinute / minuteCount) * 360;
           hourAngle =
             ((customHour + customMinute / minuteCount) / hourCount) * 360;

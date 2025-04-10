@@ -8,6 +8,7 @@
       :root {
         --bg-color: black;
         --text-color: lime;
+        --text-color-light: #333; /* Darker text for light theme */
       }
       body {
         background-color: var(--bg-color);
@@ -162,8 +163,15 @@
   <body>
     <div id="startup">LOADING . . . 1337 MODE INITIALIZING</div>
     <div class="background"></div>
-    <button id="toggleTheme">Toggle Theme</button>
-    <button id="toggleMode">Leet Mode</button>
+    <button id="toggleTheme" aria-label="Toggle between dark and light theme">
+      Toggle Theme
+    </button>
+    <button id="toggleMode" aria-label="Switch clock mode">
+      Mode: Leet time
+    </button>
+    <button id="resetLocationBtn" aria-label="Reset location to default">
+      Reset Location
+    </button>
     <div id="quote"></div>
     <div id="locationControls">
       <label>Location:</label>
@@ -185,8 +193,10 @@
         placeholder="Longitude"
         step="0.0001"
       />
-      <button id="setLocationBtn">Set</button>
-      <button id="useGeoBtn">Use My Location</button>
+      <button id="setLocationBtn" aria-label="Set custom location">Set</button>
+      <button id="useGeoBtn" aria-label="Use my current location">
+        Use My Location
+      </button>
     </div>
     <svg id="leetClock" width="1024" height="768" viewBox="0 0 400 400">
       <circle
@@ -435,7 +445,10 @@
       function setTheme(isDark) {
         const root = document.documentElement;
         root.style.setProperty("--bg-color", isDark ? "black" : "white");
-        root.style.setProperty("--text-color", isDark ? "lime" : "black");
+        root.style.setProperty(
+          "--text-color",
+          isDark ? "lime" : "var(--text-color-light)"
+        );
         localStorage.setItem("leetClockTheme", isDark ? "dark" : "light");
       }
 

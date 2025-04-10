@@ -186,6 +186,17 @@
       #secondHand {
         filter: drop-shadow(0 0 5px var(--text-color));
       }
+      #toggleSeconds {
+        position: absolute;
+        top: 40px;
+        left: 10px;
+        background: none;
+        border: 1px solid var(--text-color);
+        color: var(--text-color);
+        padding: 5px 10px;
+        font-family: monospace;
+        cursor: pointer;
+      }
     </style>
     <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   </head>
@@ -198,8 +209,11 @@
     <button id="toggleMode" aria-label="Switch clock mode">
       Mode: Leet time
     </button>
-    <button id="resetLocationBtn" aria-label="Reset location to default">
-      Reset Location
+    <button
+      id="toggleSeconds"
+      aria-label="Toggle display of seconds in digital clock"
+    >
+      Show Seconds: OFF
     </button>
     <div id="quote"></div>
     <div id="locationControls">
@@ -270,6 +284,9 @@
       <button id="useGeoBtn" aria-label="Use my current location">
         Use My Location
       </button>
+      <button id="resetLocationBtn" aria-label="Reset location to default">
+        Reset Location
+      </button>
     </div>
     <svg id="leetClock" width="1024" height="768" viewBox="0 0 400 400">
       <circle
@@ -322,6 +339,7 @@
     <div id="digital"></div>
     <audio id="sound"></audio>
     <script>
+      let showSeconds = false; // Default to not showing seconds
       const centerX = 200;
       const centerY = 200;
       let mode = "leet";
@@ -530,9 +548,9 @@
         }: ${customHour.toString().padStart(2, "0")}:${customMinute
           .toString()
           .padStart(2, "0")}${
-          mode === "sata" ? `:${customSecond.toString().padStart(2, "0")}` : ""
+          showSeconds ? `:${customSecond.toString().padStart(2, "0")}` : ""
         }${
-          mode === "real" || mode === "relative"
+          (mode === "real" || mode === "relative") && !showSeconds
             ? realHours >= 12
               ? " PM"
               : " AM"
@@ -592,6 +610,24 @@
         ).textContent = `Mode: ${modeSettings[mode].label}`;
         updateClock();
       });
+
+      document.getElementById("toggleSeconds").addEventListener("click", () => {
+        showSeconds = !showSeconds;
+        document.getElementById("toggleSeconds").textContent = `Show Seconds: ${
+          showSeconds ? "ON" : "OFF"
+        }`;
+        localStorage.setItem("showSeconds", showSeconds.toString());
+        updateClock(); // Refresh the display
+      });
+
+      // Load saved setting
+      const savedShowSeconds = localStorage.getItem("showSeconds");
+      if (savedShowSeconds) {
+        showSeconds = savedShowSeconds === "true";
+        document.getElementById("toggleSeconds").textContent = `Show Seconds: ${
+          showSeconds ? "ON" : "OFF"
+        }`;
+      }
 
       const savedMode = localStorage.getItem("leetClockMode");
       if (savedMode && modeSettings[savedMode]) {

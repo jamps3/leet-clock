@@ -526,15 +526,42 @@
           hourFont: 24, // 6% of viewBox width (24/400)
           minuteFont: 12, // 2.5% of viewBox width (10/400)
         },
+        binary: {
+          hours: 16,
+          minutes: 64,
+          label: "Binary time",
+          hourFont: 24, // Slightly smaller due to 16 hours
+          minuteFont: 12, // Smaller due to 64 minutes
+        },
+        martian: {
+          hours: 24,
+          minutes: 60,
+          label: "Martian time",
+          hourFont: 24,
+          minuteFont: 12,
+        },
+        hex: {
+          hours: 16,
+          minutes: 16,
+          label: "Hex time",
+          hourFont: 24, // 16 hours
+          minuteFont: 12, // Only 16 minutes, can be larger
+        },
       };
 
       const labelGroup = document.getElementById("labels");
 
       function drawLabels(hourCount, minuteCount) {
         labelGroup.innerHTML = "";
-        const hourRadius = 35; // 35% of viewBox width (150/400)
-        const minuteRadius = 42.5; // 42.5% of viewBox width (170/400)
+        const hourRadius = 30;
+        const minuteRadius = 40;
         const settings = modeSettings[mode];
+        const isHexMode = mode === "hex";
+
+        // Function to convert numbers to hexadecimal for hex mode
+        const toHexLabel = (num) =>
+          isHexMode ? num.toString(16).toUpperCase() : num.toString();
+
         for (let i = 0; i < hourCount; i++) {
           const angle = ((360 / hourCount) * i - 90) * (Math.PI / 180);
           const x = centerX + (hourRadius / 100) * 400 * Math.cos(angle);
@@ -545,8 +572,8 @@
           );
           text.setAttribute("x", x);
           text.setAttribute("y", y);
-          text.setAttribute("font-size", settings.hourFont); // Will update this next
-          text.textContent = i.toString();
+          text.setAttribute("font-size", settings.hourFont);
+          text.textContent = toHexLabel(i);
           labelGroup.appendChild(text);
         }
         for (let i = 0; i < minuteCount; i++) {
@@ -559,8 +586,8 @@
           );
           text.setAttribute("x", x);
           text.setAttribute("y", y);
-          text.setAttribute("font-size", settings.minuteFont); // Will update this next
-          text.textContent = i.toString();
+          text.setAttribute("font-size", settings.minuteFont);
+          text.textContent = toHexLabel(i);
           labelGroup.appendChild(text);
         }
       }
@@ -629,6 +656,24 @@
           customHour = realHours;
           customMinute = realMinutes;
           customSecond = realSeconds;
+        } else if (mode === "martian") {
+          // Martian day (sol) is 88,775 seconds
+          const secondsInEarthDay = 24 * 60 * 60; // 86,400 seconds
+          const secondsInMartianDay = 88775;
+          const fractionOfEarthDay = nowInSeconds / secondsInEarthDay;
+          const martianSeconds = fractionOfEarthDay * secondsInMartianDay;
+
+          const hourCount = settings.hours; // 24
+          const minuteCount = settings.minutes; // 60
+          const secondCount = 60;
+          const totalMartianSeconds = hourCount * minuteCount * secondCount;
+
+          const totalMinutes = martianSeconds / (secondCount * minuteCount);
+          customHour = Math.floor(totalMinutes / minuteCount) % hourCount;
+          customMinute = Math.floor(totalMinutes % minuteCount);
+          customSecond = Math.floor(
+            (martianSeconds % (secondCount * minuteCount)) / secondCount
+          );
         } else {
           const secondsInDay = 24 * 60 * 60;
           const offset = settings.offset || 0;
@@ -638,7 +683,16 @@
 
           const hourCount = settings.hours;
           const minuteCount = settings.minutes;
-          const secondCount = mode === "sata" ? 100 : mode === "leet" ? 37 : 60;
+          const secondCount =
+            mode === "sata"
+              ? 100
+              : mode === "leet"
+              ? 37
+              : mode === "binary"
+              ? 64
+              : mode === "hex"
+              ? 16
+              : 60;
           const totalCustomSeconds = hourCount * minuteCount * secondCount;
 
           const totalMinutes = fractionOfDay * (hourCount * minuteCount);
@@ -656,7 +710,16 @@
         } else {
           const hourCount = settings.hours;
           const minuteCount = settings.minutes;
-          const secondCount = mode === "sata" ? 100 : mode === "leet" ? 37 : 60;
+          const secondCount =
+            mode === "sata"
+              ? 100
+              : mode === "leet"
+              ? 37
+              : mode === "binary"
+              ? 64
+              : mode === "hex"
+              ? 16
+              : 60;
           minuteAngle = (customMinute / minuteCount) * 360;
           hourAngle =
             ((customHour + customMinute / minuteCount) / hourCount) * 360;
@@ -664,7 +727,7 @@
         }
 
         const setHand = (id, angleDeg, lengthPercentage) => {
-          const length = (lengthPercentage / 100) * 400; // Convert percentage to viewBox units (400 is the viewBox width)
+          const length = (lengthPercentage / 100) * 400;
           const angleRad = (angleDeg - 90) * (Math.PI / 180);
           const x2 = centerX + length * Math.cos(angleRad);
           const y2 = centerY + length * Math.sin(angleRad);
@@ -673,34 +736,35 @@
           hand.setAttribute("y2", y2);
         };
 
-        // Update stroke widths dynamically based on viewBox units
         document
           .getElementById("minuteHand")
-          .setAttribute("stroke-width", (0.75 / 100) * 400); // 0.75% of 400
+          .setAttribute("stroke-width", (0.75 / 100) * 400);
         document
           .getElementById("hourHand")
-          .setAttribute("stroke-width", (1.5 / 100) * 400); // 1.5% of 400
+          .setAttribute("stroke-width", (1.5 / 100) * 400);
         document
           .getElementById("secondHand")
-          .setAttribute("stroke-width", (0.25 / 100) * 400); // 0.25% of 400
+          .setAttribute("stroke-width", (0.25 / 100) * 400);
         document
           .querySelector("svg circle[stroke='lime']")
-          .setAttribute("stroke-width", (1 / 100) * 400); // 1% of 400
+          .setAttribute("stroke-width", (1 / 100) * 400);
         document
           .querySelector("svg circle[fill='lime']")
-          .setAttribute("r", (2.5 / 100) * 400); // 2.5% of 400
+          .setAttribute("r", (2.5 / 100) * 400);
 
-        setHand("hourHand", hourAngle, 25); // 25% of viewBox width
-        setHand("minuteHand", minuteAngle, 36); // 37.5% of viewBox width
-        setHand("secondHand", secondAngle, 40); // 42.5% of viewBox width
+        setHand("minuteHand", minuteAngle, 37.5);
+        setHand("hourHand", hourAngle, 25);
+        setHand("secondHand", secondAngle, 42.5);
 
+        // Update the digital label with hexadecimal for hex mode
+        const toHex = (num) =>
+          mode === "hex" ? num.toString(16).toUpperCase() : num.toString();
         document.getElementById("digital").textContent = `${
           settings.label
-        }: ${customHour.toString().padStart(2, "0")}:${customMinute
-          .toString()
-          .padStart(2, "0")}${
-          showSeconds ? `:${customSecond.toString().padStart(2, "0")}` : ""
-        }${
+        }: ${toHex(customHour).padStart(2, "0")}:${toHex(customMinute).padStart(
+          2,
+          "0"
+        )}${showSeconds ? `:${toHex(customSecond).padStart(2, "0")}` : ""}${
           (mode === "real" || mode === "relative") && !showSeconds
             ? realHours >= 12
               ? " PM"

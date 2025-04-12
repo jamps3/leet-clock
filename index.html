@@ -347,6 +347,52 @@
           width: 10vmin; /* Was 100px */
         }
       }
+      /* Red glow for Martian time */
+      .martian-glow {
+        filter: drop-shadow(
+          0 0 0.5vmin rgba(255, 69, 0, 0.8)
+        ); /* Red-orange glow */
+      }
+
+      /* Subtle red tint for the background in Martian time */
+      body.martian-background {
+        background-color: rgba(139, 0, 0, 0.2); /* Dark red tint */
+      }
+
+      /* Pulsing effect for Binary time */
+      @keyframes pulse {
+        0% {
+          filter: brightness(1);
+        }
+        50% {
+          filter: brightness(1.5);
+        }
+        100% {
+          filter: brightness(1);
+        }
+      }
+
+      .binary-pulse {
+        animation: pulse 2s infinite ease-in-out;
+      }
+
+      /* Cyan shift for Hex time */
+      .hex-cyan {
+        stroke: cyan !important; /* Override default lime color */
+        fill: cyan !important;
+      }
+
+      /* Ensure default colors are applied when not in a specific mode */
+      svg circle[stroke="lime"],
+      svg line[stroke="lime"],
+      svg text[fill="lime"],
+      svg circle[fill="lime"] {
+        transition: stroke 0.3s, fill 0.3s; /* Smooth color transitions */
+      }
+
+      body {
+        transition: background-color 0.3s; /* Smooth background transitions */
+      }
     </style>
     <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   </head>
@@ -516,7 +562,7 @@
           hours: 100,
           minutes: 100,
           label: "Sata time",
-          hourFont: 8, // 2% of viewBox width (8/400)
+          hourFont: 6, // 2% of viewBox width (8/400)
           minuteFont: 8, // 2% of viewBox width (8/400)
         },
         relative: {
@@ -781,6 +827,8 @@
           document.getElementById("quote").textContent =
             "🎉 13:37 Achieved! Stay leet. 🎉";
         }
+        // Reapply visual effects to ensure they persist after updates
+        applyVisualEffects(mode);
       }
 
       function updateQuote() {
@@ -806,6 +854,42 @@
         localStorage.setItem("leetClockTheme", isDark ? "dark" : "light");
       }
 
+      function applyVisualEffects(currentMode) {
+        // Elements to apply effects to
+        const clockElements = [
+          document.querySelector("svg circle[stroke='lime']"), // Outer circle
+          document.getElementById("minuteHand"),
+          document.getElementById("hourHand"),
+          document.getElementById("secondHand"),
+          document.querySelector("svg circle[fill='lime']"), // Center circle
+          ...document.querySelectorAll("svg text[fill='lime']"), // Labels
+        ];
+
+        // Remove all previous effects
+        clockElements.forEach((el) => {
+          if (el) {
+            el.classList.remove("martian-glow", "binary-pulse", "hex-cyan");
+          }
+        });
+        document.body.classList.remove("martian-background");
+
+        // Apply effects based on the current mode
+        if (currentMode === "martian") {
+          clockElements.forEach((el) => {
+            if (el) el.classList.add("martian-glow");
+          });
+          document.body.classList.add("martian-background");
+        } else if (currentMode === "binary") {
+          clockElements.forEach((el) => {
+            if (el) el.classList.add("binary-pulse");
+          });
+        } else if (currentMode === "hex") {
+          clockElements.forEach((el) => {
+            if (el) el.classList.add("hex-cyan");
+          });
+        }
+      }
+
       document.getElementById("toggleTheme").addEventListener("click", () => {
         const currentBg = getComputedStyle(document.documentElement)
           .getPropertyValue("--bg-color")
@@ -823,6 +907,7 @@
         document.getElementById(
           "toggleMode"
         ).textContent = `Mode: ${modeSettings[mode].label}`;
+        applyVisualEffects(mode); // Apply visual effects on mode change
         updateClock();
       });
 
@@ -835,7 +920,7 @@
         updateClock(); // Refresh the display
       });
 
-      // Load saved setting
+      // Load saved setting for ShowSeconds
       const savedShowSeconds = localStorage.getItem("showSeconds");
       if (savedShowSeconds) {
         showSeconds = savedShowSeconds === "true";
@@ -852,7 +937,10 @@
       drawLabels(modeSettings[mode].hours, modeSettings[mode].minutes);
       document.getElementById(
         "toggleMode"
-      ).textContent = `Mode: ${modeSettings[mode].label}`; // Add this line to update the button text
+      ).textContent = `Mode: ${modeSettings[mode].label}`;
+
+      // Apply visual effects based on the loaded mode
+      applyVisualEffects(mode);
 
       const savedTheme = localStorage.getItem("leetClockTheme");
       if (savedTheme === "dark" || savedTheme === "light") {

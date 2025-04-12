@@ -353,12 +353,10 @@
           0 0 0.5vmin rgba(255, 69, 0, 0.8)
         ); /* Red-orange glow */
       }
-
       /* Subtle red tint for the background in Martian time */
       body.martian-background {
         background-color: rgba(139, 0, 0, 0.2); /* Dark red tint */
       }
-
       /* Pulsing effect for Binary time */
       @keyframes pulse {
         0% {
@@ -371,17 +369,14 @@
           filter: brightness(1);
         }
       }
-
       .binary-pulse {
         animation: pulse 2s infinite ease-in-out;
       }
-
       /* Cyan shift for Hex time */
       .hex-cyan {
         stroke: cyan !important; /* Override default lime color */
         fill: cyan !important;
       }
-
       /* Ensure default colors are applied when not in a specific mode */
       svg circle[stroke="lime"],
       svg line[stroke="lime"],

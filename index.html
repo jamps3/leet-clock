@@ -38,16 +38,21 @@
         padding: 2vmin; /* Was 20px */
         box-sizing: border-box;
       }
+      /* Ensure the SVG itself is never filled */
       svg {
         background-color: transparent;
-        width: 70vmin;
-        height: 70vmin;
-        max-width: 70vmin; /* Was 500px */
-        max-height: 70vmin; /* Was 500px */
-        min-width: 70vmin; /* Was 350px */
-        min-height: 70vmin; /* Was 350px */
+        fill: none; /* Prevent any default fill */
+        width: 80vmin;
+        height: 80vmin;
+        max-width: 80vmin;
+        max-height: 80vmin;
+        min-width: 50vmin;
+        min-height: 50vmin;
       }
-
+      /* Ensure child elements have no unintended fill unless specified */
+      svg * {
+        fill: none; /* Default to no fill unless explicitly set */
+      }
       /* For screens smaller than 768px (tablets and mobile) */
       @media (max-width: 768px) {
         svg {
@@ -353,12 +358,10 @@
           0 0 0.5vmin rgba(255, 69, 0, 0.8)
         ); /* Red-orange glow */
       }
-
       /* Subtle red tint for the background in Martian time */
       body.martian-background {
         background-color: rgba(139, 0, 0, 0.2); /* Dark red tint */
       }
-
       /* Pulsing effect for Binary time */
       @keyframes pulse {
         0% {
@@ -371,25 +374,22 @@
           filter: brightness(1);
         }
       }
-
       .binary-pulse {
         animation: pulse 2s infinite ease-in-out;
       }
-
       /* Cyan shift for Hex time */
       .hex-cyan {
         stroke: cyan !important; /* Override default lime color */
         fill: cyan !important;
       }
-
       /* Ensure default colors are applied when not in a specific mode */
+      /* Ensure elements with fill or stroke are styled correctly */
       svg circle[stroke="lime"],
       svg line[stroke="lime"],
       svg text[fill="lime"],
       svg circle[fill="lime"] {
-        transition: stroke 0.3s, fill 0.3s; /* Smooth color transitions */
+        transition: stroke 0.3s, fill 0.3s;
       }
-
       body {
         transition: background-color 0.3s; /* Smooth background transitions */
       }
@@ -506,6 +506,7 @@
         y2="50"
         stroke="lime"
         stroke-width="3"
+        fill="none"
       />
       <line
         id="hourHand"
@@ -515,6 +516,7 @@
         y2="100"
         stroke="lime"
         stroke-width="6"
+        fill="none"
       />
       <line
         id="secondHand"
@@ -524,8 +526,9 @@
         y2="30"
         stroke="lime"
         stroke-width="1"
+        fill="none"
       />
-      <circle cx="200" cy="200" r="10" fill="lime" />
+      <circle cx="200" cy="200" r="10" fill="lime" stroke="none" />
     </svg>
     <div id="digital"></div>
     <audio id="sound"></audio>

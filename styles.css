@@ -4,7 +4,7 @@
 :root {
   --bg-color: black;
   --text-color: lime;
-  --text-color-light: lime;
+  --text-color-light: #333;
 }
 
 /* Base font size for rem and em units */
@@ -40,6 +40,58 @@ body {
   transition: background-color 0.3s;
 }
 
+/* Background div */
+.background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 0, 0.2) 0%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  animation: pulse 5s infinite, colorShift 10s infinite;
+}
+
+@keyframes colorShift {
+  0% {
+    background: radial-gradient(
+      circle,
+      rgba(0, 255, 0, 0.2) 0%,
+      rgba(0, 0, 0, 1) 100%
+    );
+  }
+  50% {
+    background: radial-gradient(
+      circle,
+      rgba(255, 0, 255, 0.2) 0%,
+      rgba(0, 0, 0, 1) 100%
+    );
+  }
+  100% {
+    background: radial-gradient(
+      circle,
+      rgba(0, 255, 0, 0.2) 0%,
+      rgba(0, 0, 0, 1) 100%
+    );
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.9;
+  }
+}
+
 /* SVG (clock) styles */
 svg {
   background-color: transparent;
@@ -64,6 +116,13 @@ svg circle[fill="lime"] {
   fill: lime;
 }
 
+/* Clock hands glow */
+#minuteHand,
+#hourHand,
+#secondHand {
+  filter: drop-shadow(0 0 5px var(--text-color));
+}
+
 @media (max-width: 768px) {
   svg {
     width: 90vmin;
@@ -85,10 +144,10 @@ svg circle[fill="lime"] {
 /* Quote styles */
 #quote {
   position: absolute;
-  top: 10vh;
+  top: 8vh;
   width: 100%;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.75rem;
   color: var(--text-color);
 }
 
@@ -97,14 +156,13 @@ svg circle[fill="lime"] {
 #toggleMode,
 #toggleSeconds {
   position: absolute;
-  background: rgba(0, 0, 0, 0.8);
+  background: none;
   border: 0.1vmin solid var(--text-color);
   color: var(--text-color);
   padding: 0.5vmin 1vmin;
   font-family: monospace;
   cursor: pointer;
   z-index: 20;
-  pointer-events: auto;
 }
 
 #toggleTheme {
@@ -122,12 +180,12 @@ svg circle[fill="lime"] {
   top: 4vmin;
 }
 
-/* Digital label */
+/* Digital clock */
 #digital {
   font-size: 1.5rem;
   color: var(--text-color);
   position: absolute;
-  bottom: 12vh;
+  top: 1vh;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -141,9 +199,9 @@ svg circle[fill="lime"] {
   transform: translateX(-50%);
   font-family: monospace;
   color: var(--text-color);
-  font-size: 0.9rem;
+  font-size: 1rem;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1vmin;
   justify-content: center;
   align-items: center;
@@ -151,6 +209,7 @@ svg circle[fill="lime"] {
   padding: 1vmin;
   border-radius: 0.5vmin;
   max-width: 90%;
+  max-height: 10vmin;
   z-index: 20;
 }
 
@@ -158,28 +217,42 @@ svg circle[fill="lime"] {
   margin-right: 0.5vmin;
 }
 
-#latInput,
-#lonInput,
-#setLocationBtn,
-#useGeoBtn,
-#resetLocationBtn,
-#citySelect {
+#locationControls input::placeholder {
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+#locationControls input,
+#locationControls button {
   background: none;
   border: 0.1vmin solid var(--text-color);
   color: var(--text-color);
   padding: 0.4vmin 0.6vmin;
   font-family: monospace;
   font-size: 0.9rem;
+  width: 20vmin;
   box-sizing: border-box;
 }
 
-#latInput,
-#lonInput {
-  width: 10vmin;
+#locationControls button:hover {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  cursor: pointer;
 }
 
-#citySelect {
+#locationControls select {
+  background: none;
+  border: 0.1vmin solid var(--text-color);
+  color: var(--text-color);
+  padding: 0.4vmin 0.6vmin;
+  font-family: monospace;
+  font-size: 0.9rem;
   width: 15vmin;
+}
+
+#locationControls select option {
+  background-color: black;
+  color: lime;
 }
 
 /* Startup animation */
@@ -201,20 +274,13 @@ svg circle[fill="lime"] {
   0% {
     opacity: 1;
   }
+  90% {
+    opacity: 1;
+  }
   100% {
     opacity: 0;
+    visibility: hidden;
   }
-}
-
-/* Background div */
-.background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 0, 0, 0.9));
-  z-index: -1;
 }
 
 /* Media queries for responsiveness */
@@ -241,7 +307,6 @@ svg circle[fill="lime"] {
 
   #digital {
     font-size: 1.2rem;
-    bottom: 10vh;
   }
 
   #locationControls {
@@ -251,18 +316,15 @@ svg circle[fill="lime"] {
     gap: 0.5vmin;
   }
 
-  #latInput,
-  #lonInput,
-  #setLocationBtn,
-  #useGeoBtn,
-  #resetLocationBtn,
-  #citySelect {
+  #locationControls input,
+  #locationControls button,
+  #locationControls select {
     font-size: 0.8rem;
     padding: 0.3vmin 0.5vmin;
     width: 8vmin;
   }
 
-  #citySelect {
+  #locationControls select {
     width: 12vmin;
   }
 }
@@ -282,7 +344,6 @@ svg circle[fill="lime"] {
 
   #digital {
     font-size: 1rem;
-    bottom: 8vh;
   }
 
   #locationControls {
@@ -291,65 +352,39 @@ svg circle[fill="lime"] {
     padding: 0.5vmin;
   }
 
-  #latInput,
-  #lonInput,
-  #setLocationBtn,
-  #useGeoBtn,
-  #resetLocationBtn,
-  #citySelect {
+  #locationControls input,
+  #locationControls button,
+  #locationControls select {
     font-size: 0.7rem;
     padding: 0.2vmin 0.4vmin;
     width: 6vmin;
   }
 
-  #citySelect {
+  #locationControls select {
     width: 10vmin;
   }
 }
 
-/* Visual effects for modes */
-
-/* Red glow for Martian time */
 .martian-glow {
-  filter: drop-shadow(0 0 0.5vmin rgba(255, 69, 0, 0.8));
+  /* filter: drop-shadow(0 0 0.5vmin rgba(255, 69, 0, 0.8)); */
 }
 
-/* Subtle red tint for the background in Martian time */
 body.martian-background {
-  background-color: rgba(139, 0, 0, 0.2);
-}
-
-/* Pulsing effect for Binary time */
-@keyframes pulse {
-  0% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.5);
-  }
-  100% {
-    filter: brightness(1);
-  }
+  /* background-color: rgba(139, 0, 0, 0.2); */
 }
 
 .binary-pulse {
   animation: pulse 2s infinite ease-in-out;
 }
 
-/* Cyan shift for Hex time */
 .hex-cyan {
   stroke: cyan !important;
-  fill: cyan !important;
+  /* fill: cyan !important; */
 }
 
-/* Ensure default colors are applied when not in a specific mode */
 svg circle[stroke="lime"],
 svg line[stroke="lime"],
 svg text[fill="lime"],
 svg circle[fill="lime"] {
   transition: stroke 0.3s, fill 0.3s;
-}
-
-body {
-  transition: background-color 0.3s;
 }

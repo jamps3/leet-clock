@@ -18,42 +18,42 @@ document.addEventListener("DOMContentLoaded", () => {
       minutes: 60,
       label: "Real time 12h",
       hourFont: 24,
-      minuteFont: 12,
+      minuteFont: 8,
     },
     real24: {
       hours: 24,
       minutes: 60,
       label: "Real time 24h",
-      hourFont: 24,
-      minuteFont: 12,
+      hourFont: 18,
+      minuteFont: 8,
     },
     sata: {
       hours: 100,
       minutes: 100,
       label: "Sata time",
-      hourFont: 6,
-      minuteFont: 8,
+      hourFont: 4,
+      minuteFont: 6,
     },
     relative: {
       hours: 12,
       minutes: 60,
       label: "Relative Hour",
       hourFont: 24,
-      minuteFont: 12,
+      minuteFont: 8,
     },
     binary: {
       hours: 16,
       minutes: 64,
       label: "Binary time",
       hourFont: 24,
-      minuteFont: 12,
+      minuteFont: 8,
     },
     martian: {
       hours: 24,
       minutes: 60,
       label: "Martian time",
-      hourFont: 24,
-      minuteFont: 12,
+      hourFont: 18,
+      minuteFont: 8,
     },
     hex: {
       hours: 16,
@@ -69,8 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function drawLabels(hourCount, minuteCount) {
     try {
       labelGroup.innerHTML = "";
-      const hourRadius = 160;
-      const minuteRadius = 140;
+      const hourRadius = 125;
+      const minuteRadius = 168;
       const settings = modeSettings[mode];
       const isHexMode = mode === "hex";
 
@@ -287,9 +287,9 @@ document.addEventListener("DOMContentLoaded", () => {
         .querySelector("svg circle[fill='lime']")
         .setAttribute("r", (2.5 / 100) * 400);
 
-      setHand("minuteHand", minuteAngle, 37.5);
+      setHand("minuteHand", minuteAngle, 39);
       setHand("hourHand", hourAngle, 25);
-      setHand("secondHand", secondAngle, 42.5);
+      setHand("secondHand", secondAngle, 45);
 
       const toHex = (num) =>
         mode === "hex" ? num.toString(16).toUpperCase() : num.toString();
@@ -487,7 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateQuote();
   setInterval(updateQuote, 3600000);
-  setInterval(updateClock, 100);
+  setInterval(updateClock, 10);
   updateClock();
 
   const savedLat = localStorage.getItem("latitude");

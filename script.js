@@ -147,7 +147,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function getModeTime() {
     const settings = modeSettings[mode];
     const now = new Date();
-    const earthSeconds = getSecondsSinceMidnight();
+    const nowMs = now.getTime(); // Unified time source
+    const earthSeconds = getSecondsSinceMidnight(nowMs);
     let hours, minutes, seconds, fraction, displaySeconds;
 
     if (mode === "sata") {
@@ -162,10 +163,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (mode === "relative") {
       let latitude = window.userLocation?.latitude || 60.1699;
       let longitude = window.userLocation?.longitude || 24.9384;
-      const times = SunCalc.getTimes(now, latitude, longitude);
+      const times = SunCalc.getTimes(new Date(nowMs), latitude, longitude);
       const sunrise = times.sunrise.getTime();
       const sunset = times.sunset.getTime();
-      const nowMs = now.getTime();
       const msInDay = 24 * 60 * 60 * 1000;
       let isDaytime = nowMs >= sunrise && nowMs < sunset;
       let periodStart = isDaytime ? sunrise : sunset;
@@ -186,15 +186,15 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (mode === "real") {
       hours = now.getHours() % 12 || 12;
       minutes = now.getMinutes();
-      seconds = now.getSeconds();
-      fraction = now.getMilliseconds() / 1000;
-      displaySeconds = seconds; // Direct sync
+      seconds = Math.floor(nowMs / 1000) % 60;
+      fraction = (nowMs % 1000) / 1000;
+      displaySeconds = seconds;
     } else if (mode === "real24") {
       hours = now.getHours();
       minutes = now.getMinutes();
-      seconds = now.getSeconds();
-      fraction = now.getMilliseconds() / 1000;
-      displaySeconds = seconds; // Direct sync
+      seconds = Math.floor(nowMs / 1000) % 60;
+      fraction = (nowMs % 1000) / 1000;
+      displaySeconds = seconds;
     } else if (mode === "martian") {
       const martianSeconds =
         earthSeconds * (MARTIAN_DAY_SECONDS / EARTH_DAY_SECONDS);
@@ -214,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fractionOfDay * (settings.hours * settings.minutes * secondCount);
       seconds = Math.floor(totalSeconds);
       fraction = totalSeconds - seconds;
-      displaySeconds = seconds % secondCount; // Exact sync
+      displaySeconds = seconds % secondCount;
       hours =
         Math.floor(seconds / (settings.minutes * secondCount)) % settings.hours;
       minutes = Math.floor(seconds / secondCount) % settings.minutes;
@@ -227,18 +227,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateClockHands(time) {
     const settings = modeSettings[mode];
     const secondCount = settings.seconds;
-    let fraction = time.fraction;
-    if (mode === "real" || mode === "real24") {
-      fraction = (performance.now() % 1000) / 1000; // Fresh fraction
-    }
-    const secondAngle = (time.seconds + fraction) * (360 / secondCount);
+    const secondAngle = (time.seconds + time.fraction) * (360 / secondCount);
     const minuteAngle =
-      (time.minutes + (time.seconds + fraction) / secondCount) *
+      (time.minutes + (time.seconds + time.fraction) / secondCount) *
       (360 / settings.minutes);
     const hourAngle =
       (time.hours +
         time.minutes / settings.minutes +
-        (time.seconds + fraction) / (settings.minutes * secondCount)) *
+        (time.seconds + time.fraction) / (settings.minutes * secondCount)) *
       (360 / settings.hours);
 
     setHand("secondHand", secondAngle, 45);
@@ -260,15 +256,14 @@ document.addEventListener("DOMContentLoaded", () => {
     hand.setAttribute("y2", y2);
   }
 
-  function timeToNextSecond() {
+  function timeToNextSecond(time) {
     if (mode === "relative") {
-      const now = new Date();
+      const nowMs = Date.now();
       const latitude = window.userLocation?.latitude || 60.1699;
       const longitude = window.userLocation?.longitude || 24.9384;
-      const times = SunCalc.getTimes(now, latitude, longitude);
+      const times = SunCalc.getTimes(new Date(nowMs), latitude, longitude);
       const sunrise = times.sunrise.getTime();
       const sunset = times.sunset.getTime();
-      const nowMs = now.getTime();
       const msInDay = 24 * 60 * 60 * 1000;
       const isDaytime = nowMs >= sunrise && nowMs < sunset;
       const periodStart = isDaytime ? sunrise : sunset;
@@ -281,7 +276,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return relativeSecondLength * (1 - (secondsElapsed % 1));
     }
     const duration = secondDurations[mode];
-    return duration - (performance.now() % duration);
+    return duration * (1 - (time.fraction % 1));
+  }
+
+  function getSecondsSinceMidnight(nowMs = Date.now()) {
+    return (nowMs / 1000) % EARTH_DAY_SECONDS;
   }
 
   function updateClock() {
@@ -331,7 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (realHours === 13 && realMinutes === 37 && realSeconds === 0) {
         const sound = document.getElementById("sound");
         if (!sound.src) {
-          sound.src = "https://www.soundjay.com/button/beep-07.wav";
+          sound.src = "leet.wav";
         }
         sound.play();
         document.getElementById("quote").textContent =
@@ -343,11 +342,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function runClock() {
+  function runClock(lastUpdateMs = 0) {
+    const nowMs = performance.now();
     const time = getModeTime();
     updateClockHands(time);
-    updateClock(); // Ensure digital sync
-    requestAnimationFrame(runClock);
+    const nextUpdate = timeToNextSecond(time);
+    if (nextUpdate <= 16.67) {
+      updateClock();
+      setTimeout(
+        () => requestAnimationFrame(() => runClock(nowMs)),
+        nextUpdate
+      );
+    } else {
+      requestAnimationFrame(() => runClock(nowMs));
+    }
   }
 
   function updateQuote() {
@@ -521,7 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateQuote();
   setInterval(updateQuote, 3600000);
   updateClock(); // Set initial digital time
-  runClock();
+  requestAnimationFrame(runClock); // Start smooth loop
 
   const savedLat = localStorage.getItem("latitude");
   const savedLon = localStorage.getItem("longitude");

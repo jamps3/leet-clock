@@ -121,6 +121,12 @@ svg circle[fill="lime"] {
 #hourHand,
 #secondHand {
   filter: drop-shadow(0 0 5px var(--text-color));
+  transition: transform 0.2s linear; /* Smooth transition for rotation */
+}
+
+/* Optionally adjust second hand for continuous motion */
+#secondHand {
+  transition: transform 1s linear; /* Matches 1000ms Sata second for continuous sweep */
 }
 
 @media (max-width: 768px) {

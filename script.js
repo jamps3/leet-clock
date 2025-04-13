@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
       seconds: 100,
       label: "Sata time",
       hourFont: 4,
-      minuteFont: 6,
+      minuteFont: 5,
     },
     relative: {
       hours: 12,
@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
         (elapsed % (relativeHourLength / 60)) / (relativeHourLength / 3600)
       );
       fraction =
-        (elapsed % (relativeHourLength / 60)) / (relativeHourLength / 60);
+        (elapsed % (relativeHourLength / 3600)) / (relativeHourLength / 3600);
       displaySeconds = Math.round(seconds + fraction) % 60;
     } else if (mode === "real") {
       hours = now.getHours() % 12 || 12;
@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fractionOfDay * (settings.hours * settings.minutes * secondCount);
       seconds = Math.floor(totalSeconds);
       fraction = totalSeconds - seconds;
-      displaySeconds = Math.round(totalSeconds) % secondCount;
+      displaySeconds = Math.round(totalSeconds - 0.25) % secondCount; // Adjust to sync with hand
       hours =
         Math.floor(seconds / (settings.minutes * secondCount)) % settings.hours;
       minutes = Math.floor(seconds / secondCount) % settings.minutes;
@@ -274,7 +274,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const relativeHourLength = periodLength / 12;
       const relativeSecondLength = relativeHourLength / (60 * 60);
       const elapsed = (nowMs - periodStart + msInDay) % msInDay;
-      return relativeSecondLength - (elapsed % relativeSecondLength);
+      const secondsElapsed = elapsed / relativeSecondLength;
+      return relativeSecondLength * (1 - (secondsElapsed % 1));
     }
     const duration = secondDurations[mode];
     return duration - (performance.now() % duration);

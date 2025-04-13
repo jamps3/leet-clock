@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     leet: {
       hours: 13,
       minutes: 37,
+      seconds: 37,
       label: "Leet time",
       offset: 13 * 3600 + 37 * 60,
       hourFont: 24,
@@ -16,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     real: {
       hours: 12,
       minutes: 60,
+      seconds: 60,
       label: "Real time 12h",
       hourFont: 24,
       minuteFont: 8,
@@ -23,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     real24: {
       hours: 24,
       minutes: 60,
+      seconds: 60,
       label: "Real time 24h",
       hourFont: 18,
       minuteFont: 8,
@@ -30,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sata: {
       hours: 100,
       minutes: 100,
+      seconds: 100,
       label: "Sata time",
       hourFont: 4,
       minuteFont: 6,
@@ -37,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     relative: {
       hours: 12,
       minutes: 60,
+      seconds: 60,
       label: "Relative Hour",
       hourFont: 24,
       minuteFont: 8,
@@ -44,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     binary: {
       hours: 16,
       minutes: 64,
+      seconds: 64,
       label: "Binary time",
       hourFont: 24,
       minuteFont: 8,
@@ -51,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     martian: {
       hours: 24,
       minutes: 60,
+      seconds: 60,
       label: "Martian time",
       hourFont: 18,
       minuteFont: 8,
@@ -58,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     hex: {
       hours: 16,
       minutes: 16,
+      seconds: 16,
       label: "Hex time",
       hourFont: 24,
       minuteFont: 12,
@@ -65,6 +73,21 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const labelGroup = document.getElementById("labels");
+  const SATA_CYCLE_SECONDS = 100 * 100 * 100; // 1,000,000 Sata seconds
+  const EARTH_DAY_SECONDS = 86400; // Earth day
+  const MARTIAN_DAY_SECONDS = 88775; // Martian sol
+
+  // Second durations (milliseconds per mode-specific second)
+  const secondDurations = {
+    leet: (EARTH_DAY_SECONDS / (13 * 37 * 37)) * 1000, // ~2337ms
+    real: 1000,
+    real24: 1000,
+    sata: (EARTH_DAY_SECONDS / SATA_CYCLE_SECONDS) * 1000, // ~864ms
+    relative: 1000, // Adjusted dynamically in relative mode
+    binary: (EARTH_DAY_SECONDS / (16 * 64 * 64)) * 1000, // ~1322ms
+    martian: (MARTIAN_DAY_SECONDS / (24 * 60 * 60)) * 1000, // ~1479ms
+    hex: (EARTH_DAY_SECONDS / (16 * 16 * 16)) * 1000, // ~33750ms
+  };
 
   function drawLabels(hourCount, minuteCount) {
     try {
@@ -79,8 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       for (let i = 0; i < hourCount; i++) {
         const angle = ((360 / hourCount) * i - 90) * (Math.PI / 180);
-        const x = centerX + (hourRadius / 100) * 100 * Math.cos(angle);
-        const y = centerY + (hourRadius / 100) * 100 * Math.sin(angle);
+        const x = centerX + hourRadius * Math.cos(angle);
+        const y = centerY + hourRadius * Math.sin(angle);
         const text = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "text"
@@ -94,8 +117,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       for (let i = 0; i < minuteCount; i++) {
         const angle = ((360 / minuteCount) * i - 90) * (Math.PI / 180);
-        const x = centerX + (minuteRadius / 100) * 100 * Math.cos(angle);
-        const y = centerY + (minuteRadius / 100) * 100 * Math.sin(angle);
+        const x = centerX + minuteRadius * Math.cos(angle);
+        const y = centerY + minuteRadius * Math.sin(angle);
         const text = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "text"
@@ -112,164 +135,138 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function getSunriseTime(date) {
-    try {
-      const times = SunCalc.getTimes(date, latitude, longitude);
-      return times.sunrise;
-    } catch (error) {
-      console.error("Error in getSunriseTime:", error);
-      return null;
-    }
+  function getSecondsSinceMidnight() {
+    const now = new Date();
+    return (
+      now.getHours() * 3600 +
+      now.getMinutes() * 60 +
+      now.getSeconds() +
+      now.getMilliseconds() / 1000
+    );
   }
 
-  function getSunsetTime(date) {
-    try {
-      const times = SunCalc.getTimes(date, latitude, longitude);
-      return times.sunset;
-    } catch (error) {
-      console.error("Error in getSunsetTime:", error);
-      return null;
+  function getModeTime() {
+    const settings = modeSettings[mode];
+    const now = new Date();
+    const earthSeconds = getSecondsSinceMidnight();
+    const perfNow = performance.now();
+    let hours, minutes, seconds, fraction;
+
+    if (mode === "sata") {
+      const sataTotalSeconds =
+        earthSeconds * (SATA_CYCLE_SECONDS / EARTH_DAY_SECONDS);
+      seconds = Math.floor(sataTotalSeconds);
+      fraction = sataTotalSeconds - seconds;
+      hours = Math.floor(seconds / (100 * 100)) % 100;
+      minutes = Math.floor(seconds / 100) % 100;
+      seconds = seconds % 100;
+    } else if (mode === "relative") {
+      let latitude = window.userLocation?.latitude || 60.1699;
+      let longitude = window.userLocation?.longitude || 24.9384;
+      const times = SunCalc.getTimes(now, latitude, longitude);
+      const sunrise = times.sunrise.getTime();
+      const sunset = times.sunset.getTime();
+      const nowMs = now.getTime();
+      const msInDay = 24 * 60 * 60 * 1000;
+      let isDaytime = nowMs >= sunrise && nowMs < sunset;
+      let periodStart = isDaytime ? sunrise : sunset;
+      let periodEnd = isDaytime ? sunset : sunrise + msInDay;
+      let periodLength = periodEnd - periodStart;
+      let elapsed = (nowMs - periodStart + msInDay) % msInDay;
+      let relativeHourLength = periodLength / 12;
+      hours = Math.floor(elapsed / relativeHourLength);
+      minutes = Math.floor(
+        (elapsed % relativeHourLength) / (relativeHourLength / 60)
+      );
+      seconds = Math.floor(
+        (elapsed % (relativeHourLength / 60)) / (relativeHourLength / 3600)
+      );
+      fraction =
+        (perfNow % (relativeHourLength / 3600)) / (relativeHourLength / 3600);
+    } else if (mode === "real") {
+      hours = now.getHours() % 12 || 12;
+      minutes = now.getMinutes();
+      seconds = now.getSeconds();
+      fraction = now.getMilliseconds() / 1000;
+    } else if (mode === "real24") {
+      hours = now.getHours();
+      minutes = now.getMinutes();
+      seconds = now.getSeconds();
+      fraction = now.getMilliseconds() / 1000;
+    } else if (mode === "martian") {
+      const martianSeconds =
+        earthSeconds * (MARTIAN_DAY_SECONDS / EARTH_DAY_SECONDS);
+      const totalMinutes = martianSeconds / (60 * 60);
+      hours = Math.floor(totalMinutes / 60) % 24;
+      minutes = Math.floor(totalMinutes % 60);
+      seconds = Math.floor((martianSeconds % (60 * 60)) / 60);
+      fraction = (martianSeconds % 60) / 60;
+    } else {
+      const offset = settings.offset || 0;
+      const adjustedSeconds =
+        (earthSeconds - offset + EARTH_DAY_SECONDS) % EARTH_DAY_SECONDS;
+      const fractionOfDay = adjustedSeconds / EARTH_DAY_SECONDS;
+      const secondCount = settings.seconds;
+      const totalSeconds =
+        fractionOfDay * (settings.hours * settings.minutes * secondCount);
+      seconds = Math.floor(totalSeconds);
+      fraction = totalSeconds - seconds;
+      hours =
+        Math.floor(seconds / (settings.minutes * secondCount)) % settings.hours;
+      minutes = Math.floor(seconds / secondCount) % settings.minutes;
+      seconds = seconds % secondCount;
     }
+
+    return { hours, minutes, seconds, fraction };
+  }
+
+  function updateClockHands(time) {
+    const settings = modeSettings[mode];
+    const secondCount = settings.seconds;
+    const secondAngle = (time.seconds + time.fraction) * (360 / secondCount);
+    const minuteAngle =
+      (time.minutes + (time.seconds + time.fraction) / secondCount) *
+      (360 / settings.minutes);
+    const hourAngle =
+      (time.hours +
+        time.minutes / settings.minutes +
+        (time.seconds + time.fraction) / (settings.minutes * secondCount)) *
+      (360 / settings.hours);
+
+    setHand("secondHand", secondAngle, 45);
+    setHand("minuteHand", minuteAngle, 39);
+    setHand("hourHand", hourAngle, 25);
+  }
+
+  function setHand(id, angleDeg, lengthPercentage) {
+    const length = (lengthPercentage / 100) * 400;
+    const angleRad = (angleDeg - 90) * (Math.PI / 180);
+    const x2 = centerX + length * Math.cos(angleRad);
+    const y2 = centerY + length * Math.sin(angleRad);
+    const hand = document.getElementById(id);
+    if (!hand) {
+      console.error(`Hand element with ID ${id} not found`);
+      return;
+    }
+    hand.setAttribute("x2", x2);
+    hand.setAttribute("y2", y2);
+  }
+
+  function timeToNextSecond() {
+    const duration =
+      mode === "relative" ? secondDurations[mode] : secondDurations[mode];
+    return duration - (performance.now() % duration);
   }
 
   function updateClock() {
     try {
-      const now = new Date();
-      const realHours = now.getHours();
-      const realMinutes = now.getMinutes();
-      const realSeconds = now.getSeconds();
-      const realMilliseconds = now.getMilliseconds();
+      const time = getModeTime();
+      const date = new Date();
+      const realHours = date.getHours();
+      const realMinutes = date.getMinutes();
+      const realSeconds = date.getSeconds();
 
-      const nowInSeconds =
-        realHours * 3600 +
-        realMinutes * 60 +
-        realSeconds +
-        realMilliseconds / 1000;
-
-      let customHour, customMinute, customSecond;
-      const settings = modeSettings[mode];
-
-      if (mode === "relative") {
-        let latitude, longitude;
-        if (window.userLocation) {
-          ({ latitude, longitude } = window.userLocation);
-        } else {
-          latitude = 60.1699;
-          longitude = 24.9384;
-        }
-
-        const times = SunCalc.getTimes(now, latitude, longitude);
-        const sunrise = times.sunrise.getTime();
-        const sunset = times.sunset.getTime();
-        const nowMs = now.getTime();
-
-        const msInDay = 24 * 60 * 60 * 1000;
-        let isDaytime = nowMs >= sunrise && nowMs < sunset;
-
-        let periodStart = isDaytime ? sunrise : sunset;
-        let periodEnd = isDaytime ? sunset : sunrise + msInDay;
-        let periodLength = periodEnd - periodStart;
-        let elapsed = (nowMs - periodStart + msInDay) % msInDay;
-
-        let relativeHourLength = periodLength / 12;
-        customHour = Math.floor(elapsed / relativeHourLength);
-        customMinute = Math.floor(
-          (elapsed % relativeHourLength) / (relativeHourLength / 60)
-        );
-        customSecond = Math.floor(
-          (elapsed % (relativeHourLength / 60)) / (relativeHourLength / 3600)
-        );
-      } else if (mode === "real") {
-        customHour = realHours % 12;
-        if (customHour === 0) customHour = 12;
-        customMinute = realMinutes;
-        customSecond = realSeconds;
-      } else if (mode === "real24") {
-        customHour = realHours;
-        customMinute = realMinutes;
-        customSecond = realSeconds;
-      } else if (mode === "martian") {
-        const secondsInEarthDay = 24 * 60 * 60;
-        const secondsInMartianDay = 88775;
-        const fractionOfEarthDay = nowInSeconds / secondsInEarthDay;
-        const martianSeconds = fractionOfEarthDay * secondsInMartianDay;
-
-        const hourCount = settings.hours;
-        const minuteCount = settings.minutes;
-        const secondCount = 60;
-        const totalMartianSeconds = hourCount * minuteCount * secondCount;
-
-        const totalMinutes = martianSeconds / (secondCount * minuteCount);
-        customHour = Math.floor(totalMinutes / minuteCount) % hourCount;
-        customMinute = Math.floor(totalMinutes % minuteCount);
-        customSecond = Math.floor(
-          (martianSeconds % (secondCount * minuteCount)) / secondCount
-        );
-      } else {
-        const secondsInDay = 24 * 60 * 60;
-        const offset = settings.offset || 0;
-        const adjustedSeconds =
-          (nowInSeconds - offset + secondsInDay) % secondsInDay;
-        const fractionOfDay = adjustedSeconds / secondsInDay;
-
-        const hourCount = settings.hours;
-        const minuteCount = settings.minutes;
-        const secondCount =
-          mode === "sata"
-            ? 100
-            : mode === "leet"
-            ? 37
-            : mode === "binary"
-            ? 64
-            : mode === "hex"
-            ? 16
-            : 60;
-        const totalCustomSeconds = hourCount * minuteCount * secondCount;
-
-        const totalMinutes = fractionOfDay * (hourCount * minuteCount);
-        customHour = Math.floor(totalMinutes / minuteCount) % hourCount;
-        customMinute = Math.floor(totalMinutes % minuteCount);
-        const totalSeconds = fractionOfDay * totalCustomSeconds;
-        customSecond = Math.floor(totalSeconds % secondCount);
-      }
-
-      let minuteAngle, hourAngle, secondAngle;
-      if (mode === "relative") {
-        minuteAngle = (customMinute / 60) * 360;
-        hourAngle = ((customHour + customMinute / 60) / 12) * 360;
-        secondAngle = (customSecond / 60) * 360;
-      } else {
-        const hourCount = settings.hours;
-        const minuteCount = settings.minutes;
-        const secondCount =
-          mode === "sata"
-            ? 100
-            : mode === "leet"
-            ? 37
-            : mode === "binary"
-            ? 64
-            : mode === "hex"
-            ? 16
-            : 60;
-        minuteAngle = (customMinute / minuteCount) * 360;
-        hourAngle =
-          ((customHour + customMinute / minuteCount) / hourCount) * 360;
-        secondAngle = (customSecond / secondCount) * 360;
-      }
-
-      const setHand = (id, angleDeg, lengthPercentage) => {
-        const length = (lengthPercentage / 100) * 400;
-        const angleRad = (angleDeg - 90) * (Math.PI / 180);
-        const x2 = centerX + length * Math.cos(angleRad);
-        const y2 = centerY + length * Math.sin(angleRad);
-        const hand = document.getElementById(id);
-        if (!hand) {
-          console.error(`Hand element with ID ${id} not found`);
-          return;
-        }
-        hand.setAttribute("x2", x2);
-        hand.setAttribute("y2", y2);
-      };
+      updateClockHands(time);
 
       document
         .getElementById("minuteHand")
@@ -287,18 +284,15 @@ document.addEventListener("DOMContentLoaded", () => {
         .querySelector("svg circle[fill='lime']")
         .setAttribute("r", (2.5 / 100) * 400);
 
-      setHand("minuteHand", minuteAngle, 39);
-      setHand("hourHand", hourAngle, 25);
-      setHand("secondHand", secondAngle, 45);
-
+      const settings = modeSettings[mode];
       const toHex = (num) =>
         mode === "hex" ? num.toString(16).toUpperCase() : num.toString();
       document.getElementById("digital").textContent = `${
         settings.label
-      }: ${toHex(customHour).padStart(2, "0")}:${toHex(customMinute).padStart(
+      }: ${toHex(time.hours).padStart(2, "0")}:${toHex(time.minutes).padStart(
         2,
         "0"
-      )}${showSeconds ? `:${toHex(customSecond).padStart(2, "0")}` : ""}${
+      )}${showSeconds ? `:${toHex(time.seconds).padStart(2, "0")}` : ""}${
         (mode === "real" || mode === "relative") && !showSeconds
           ? realHours >= 12
             ? " PM"
@@ -318,6 +312,17 @@ document.addEventListener("DOMContentLoaded", () => {
       applyVisualEffects(mode);
     } catch (error) {
       console.error("Error in updateClock:", error);
+    }
+  }
+
+  function runClock() {
+    const time = getModeTime();
+    updateClockHands(time);
+    if (timeToNextSecond() <= 16.67) {
+      updateClock();
+      setTimeout(() => requestAnimationFrame(runClock), timeToNextSecond() + 1);
+    } else {
+      requestAnimationFrame(runClock);
     }
   }
 
@@ -389,9 +394,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Add console.log to debug event listeners
+  // Event listeners
   document.getElementById("toggleTheme").addEventListener("click", () => {
-    console.log("Toggle Theme button clicked");
     try {
       const currentBg = getComputedStyle(document.documentElement)
         .getPropertyValue("--bg-color")
@@ -404,7 +408,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("toggleMode").addEventListener("click", () => {
-    console.log("Toggle Mode button clicked");
     try {
       const modes = Object.keys(modeSettings);
       const currentIndex = modes.indexOf(mode);
@@ -415,6 +418,12 @@ document.addEventListener("DOMContentLoaded", () => {
         "toggleMode"
       ).textContent = `Mode: ${modeSettings[mode].label}`;
       applyVisualEffects(mode);
+
+      // Adjust second hand transition duration
+      const secondHand = document.getElementById("secondHand");
+      const duration = Math.min(secondDurations[mode] / 1000, 5); // Cap at 5s for hex
+      secondHand.style.transition = `x2 ${duration}s linear, y2 ${duration}s linear`;
+
       updateClock();
     } catch (error) {
       console.error("Error in toggleMode handler:", error);
@@ -422,7 +431,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("toggleSeconds").addEventListener("click", () => {
-    console.log("Toggle Seconds button clicked");
     try {
       showSeconds = !showSeconds;
       document.getElementById("toggleSeconds").textContent = `Show Seconds: ${
@@ -435,7 +443,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Ensure #startup doesn't block clicks after animation
   const startupDiv = document.getElementById("startup");
   startupDiv.addEventListener("animationend", () => {
     startupDiv.style.display = "none";
@@ -458,6 +465,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById(
     "toggleMode"
   ).textContent = `Mode: ${modeSettings[mode].label}`;
+
+  // Set initial second hand transition
+  const secondHand = document.getElementById("secondHand");
+  const duration = Math.min(secondDurations[mode] / 1000, 5); // Cap at 5s
+  secondHand.style.transition = `x2 ${duration}s linear, y2 ${duration}s linear`;
 
   applyVisualEffects(mode);
 
@@ -487,8 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateQuote();
   setInterval(updateQuote, 3600000);
-  setInterval(updateClock, 10);
-  updateClock();
+  runClock();
 
   const savedLat = localStorage.getItem("latitude");
   const savedLon = localStorage.getItem("longitude");
@@ -570,22 +581,5 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Error in resetLocationBtn handler:", error);
     }
-  });
-
-  // Add minimal event listeners for debugging
-  document.getElementById("toggleTheme").addEventListener("click", () => {
-    console.log("Minimal Toggle Theme button clicked");
-  });
-
-  document.getElementById("toggleMode").addEventListener("click", () => {
-    console.log("Minimal Toggle Mode button clicked");
-  });
-
-  document.getElementById("toggleSeconds").addEventListener("click", () => {
-    console.log("Minimal Toggle Seconds button clicked");
-  });
-
-  document.body.addEventListener("click", (event) => {
-    console.log("Body clicked, target:", event.target);
   });
 });

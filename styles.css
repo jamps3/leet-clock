@@ -116,17 +116,16 @@ svg circle[fill="lime"] {
   fill: lime;
 }
 
-/* Clock hands glow */
+/* Clock hands */
 #minuteHand,
 #hourHand,
 #secondHand {
   filter: drop-shadow(0 0 5px var(--text-color));
-  transition: transform 0.2s linear; /* Smooth transition for rotation */
+  transition: x2 0.2s linear, y2 0.2s linear; /* Smooth transitions for all hands */
 }
 
-/* Optionally adjust second hand for continuous motion */
 #secondHand {
-  transition: transform 1s linear; /* Matches 1000ms Sata second for continuous sweep */
+  transition: x2 1s linear, y2 1s linear; /* Default to Earth second; overridden in JS for modes */
 }
 
 @media (max-width: 768px) {

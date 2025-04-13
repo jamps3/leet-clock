@@ -148,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const settings = modeSettings[mode];
     const now = new Date();
     const earthSeconds = getSecondsSinceMidnight();
-    const perfNow = performance.now();
     let hours, minutes, seconds, fraction, displaySeconds;
 
     if (mode === "sata") {
@@ -189,13 +188,13 @@ document.addEventListener("DOMContentLoaded", () => {
       minutes = now.getMinutes();
       seconds = now.getSeconds();
       fraction = now.getMilliseconds() / 1000;
-      displaySeconds = Math.round(seconds + fraction) % 60;
+      displaySeconds = seconds; // Direct sync
     } else if (mode === "real24") {
       hours = now.getHours();
       minutes = now.getMinutes();
       seconds = now.getSeconds();
       fraction = now.getMilliseconds() / 1000;
-      displaySeconds = Math.round(seconds + fraction) % 60;
+      displaySeconds = seconds; // Direct sync
     } else if (mode === "martian") {
       const martianSeconds =
         earthSeconds * (MARTIAN_DAY_SECONDS / EARTH_DAY_SECONDS);
@@ -215,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fractionOfDay * (settings.hours * settings.minutes * secondCount);
       seconds = Math.floor(totalSeconds);
       fraction = totalSeconds - seconds;
-      displaySeconds = Math.round(totalSeconds - 0.25) % secondCount; // Adjust to sync with hand
+      displaySeconds = seconds % secondCount; // Exact sync
       hours =
         Math.floor(seconds / (settings.minutes * secondCount)) % settings.hours;
       minutes = Math.floor(seconds / secondCount) % settings.minutes;
@@ -228,14 +227,18 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateClockHands(time) {
     const settings = modeSettings[mode];
     const secondCount = settings.seconds;
-    const secondAngle = (time.seconds + time.fraction) * (360 / secondCount);
+    let fraction = time.fraction;
+    if (mode === "real" || mode === "real24") {
+      fraction = (performance.now() % 1000) / 1000; // Fresh fraction
+    }
+    const secondAngle = (time.seconds + fraction) * (360 / secondCount);
     const minuteAngle =
-      (time.minutes + (time.seconds + time.fraction) / secondCount) *
+      (time.minutes + (time.seconds + fraction) / secondCount) *
       (360 / settings.minutes);
     const hourAngle =
       (time.hours +
         time.minutes / settings.minutes +
-        (time.seconds + time.fraction) / (settings.minutes * secondCount)) *
+        (time.seconds + fraction) / (settings.minutes * secondCount)) *
       (360 / settings.hours);
 
     setHand("secondHand", secondAngle, 45);
@@ -343,12 +346,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function runClock() {
     const time = getModeTime();
     updateClockHands(time);
-    if (timeToNextSecond() <= 16.67) {
-      updateClock();
-      setTimeout(() => requestAnimationFrame(runClock), timeToNextSecond() + 1);
-    } else {
-      requestAnimationFrame(runClock);
-    }
+    updateClock(); // Ensure digital sync
+    requestAnimationFrame(runClock);
   }
 
   function updateQuote() {

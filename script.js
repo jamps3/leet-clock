@@ -283,9 +283,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return (nowMs / 1000) % EARTH_DAY_SECONDS;
   }
 
-  function updateClock() {
+  function updateClock(time = null) {
     try {
-      const time = getModeTime();
+      if (!time) time = getModeTime();
       const date = new Date();
       const realHours = date.getHours();
       const realMinutes = date.getMinutes();
@@ -342,20 +342,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function runClock(lastUpdateMs = 0) {
-    const nowMs = performance.now();
+  function runClock() {
     const time = getModeTime();
-    updateClockHands(time);
+    updateClock(time);
     const nextUpdate = timeToNextSecond(time);
-    if (nextUpdate <= 16.67) {
-      updateClock();
-      setTimeout(
-        () => requestAnimationFrame(() => runClock(nowMs)),
-        nextUpdate
-      );
-    } else {
-      requestAnimationFrame(() => runClock(nowMs));
-    }
+    setTimeout(() => requestAnimationFrame(runClock), nextUpdate);
   }
 
   function updateQuote() {

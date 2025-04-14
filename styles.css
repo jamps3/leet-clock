@@ -372,10 +372,11 @@ svg circle[fill="lime"] {
 
 .martian-glow {
   /* filter: drop-shadow(0 0 0.5vmin rgba(255, 69, 0, 0.8)); */
+  filter: none;
 }
 
 body.martian-background {
-  /* background-color: rgba(139, 0, 0, 0.2); */
+  background-color: rgba(139, 0, 0, 0.2);
 }
 
 .binary-pulse {
@@ -392,4 +393,22 @@ svg line[stroke="lime"],
 svg text[fill="lime"],
 svg circle[fill="lime"] {
   transition: stroke 0.3s, fill 0.3s;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+button {
+  transition: transform 0.1s ease;
+}
+
+button:hover {
+  transform: scale(1.04);
 }

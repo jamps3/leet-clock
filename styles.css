@@ -4,7 +4,6 @@
 :root {
   --bg-color: black;
   --text-color: lime;
-  --text-color-light: #eee;
   --text-color-light-mode: #eee;
 }
 
@@ -191,6 +190,17 @@ svg circle[fill="lime"] {
   text-align: center;
 }
 
+/* System time */
+#systemTime {
+  font-size: 1rem;
+  color: var(--text-color);
+  position: absolute;
+  bottom: 1vmin;
+  right: 1vmin;
+  font-family: monospace;
+  z-index: 20;
+}
+
 /* Location controls */
 #locationControls {
   position: absolute;
@@ -199,22 +209,21 @@ svg circle[fill="lime"] {
   transform: translateX(-50%);
   font-family: monospace;
   color: var(--text-color);
-  font-size: 1rem;
+  font-size: 0.75rem;
   display: flex;
-  flex-wrap: nowrap;
-  gap: 1vmin;
+  flex-wrap: wrap;
+  gap: 0.5vmin;
   justify-content: center;
   align-items: center;
   background: rgba(0, 0, 0, 0.5);
   padding: 1vmin;
   border-radius: 0.5vmin;
-  max-width: 90%;
-  max-height: 10vmin;
+  max-width: 95%;
   z-index: 20;
 }
 
 #locationControls label {
-  margin-right: 0.5vmin;
+  margin-right: 0.3vmin;
 }
 
 #locationControls input::placeholder {
@@ -227,10 +236,11 @@ svg circle[fill="lime"] {
   background: none;
   border: 0.1vmin solid var(--text-color);
   color: var(--text-color);
-  padding: 0.4vmin 0.6vmin;
+  padding: 0.3vmin 0.4vmin;
   font-family: monospace;
-  font-size: 0.9rem;
-  width: 20vmin;
+  font-size: 0.7rem;
+  width: auto;
+  min-width: 8vmin;
   box-sizing: border-box;
 }
 
@@ -244,15 +254,21 @@ svg circle[fill="lime"] {
   background: none;
   border: 0.1vmin solid var(--text-color);
   color: var(--text-color);
-  padding: 0.4vmin 0.6vmin;
+  padding: 0.3vmin 0.4vmin;
   font-family: monospace;
-  font-size: 0.9rem;
-  width: 15vmin;
+  font-size: 0.7rem;
+  width: auto;
+  min-width: 10vmin;
 }
 
 #locationControls select option {
   background-color: black;
   color: lime;
+}
+
+/* Sync input specific */
+#syncInput {
+  width: 12vmin !important;
 }
 
 /* Startup animation */
@@ -309,6 +325,12 @@ svg circle[fill="lime"] {
     font-size: 1.2rem;
   }
 
+  #systemTime {
+    font-size: 0.9rem;
+    bottom: 1vmin;
+    right: 1vmin;
+  }
+
   #locationControls {
     bottom: 1vh;
     font-size: 0.8rem;
@@ -362,6 +384,10 @@ svg circle[fill="lime"] {
 
   #locationControls select {
     width: 10vmin;
+  }
+
+  #systemTime {
+    font-size: 0.8rem;
   }
 }
 

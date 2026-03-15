@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   let showSeconds = false;
+  let timeOffsetNs = 0; // Nanosecond offset for clock sync
   const centerX = 200;
   const centerY = 200;
   let mode = "leet";
@@ -141,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function getModeTime() {
     const settings = modeSettings[mode];
     const now = new Date();
-    const nowMs = now.getTime(); // Unified time source
+    const nowMs = now.getTime() + timeOffsetNs / 1e6; // Unified time source with offset
     const earthSeconds = getSecondsSinceMidnight(nowMs);
     let hours, minutes, seconds, fraction, displaySeconds;
 
@@ -252,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function timeToNextSecond(time) {
     if (mode === "relative") {
-      const nowMs = Date.now();
+      const nowMs = Date.now() + timeOffsetNs / 1e6;
       const latitude = window.userLocation?.latitude || 60.1699;
       const longitude = window.userLocation?.longitude || 24.9384;
       const times = SunCalc.getTimes(new Date(nowMs), latitude, longitude);
@@ -336,8 +337,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const time = getModeTime();
     updateClock(time);
     const nextUpdate = timeToNextSecond(time);
+
+    // Check if offset changed and force refresh if needed
+    if (timeOffsetNs !== runClock.lastOffset) {
+      runClock.lastOffset = timeOffsetNs;
+      requestAnimationFrame(runClock);
+      return;
+    }
+
     setTimeout(() => requestAnimationFrame(runClock), nextUpdate);
   }
+  runClock.lastOffset = 0;
 
   function updateQuote() {
     try {
@@ -481,6 +491,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   applyVisualEffects(mode);
 
+  const savedSync = localStorage.getItem("leetClockSync");
+  if (savedSync) {
+    const parsed = parseInt(savedSync, 10);
+    if (!isNaN(parsed)) {
+      timeOffsetNs = parsed;
+      document.getElementById("syncInput").value = parsed;
+    }
+  }
+
   const savedTheme = localStorage.getItem("leetClockTheme");
   if (savedTheme === "dark" || savedTheme === "light") {
     setTheme(savedTheme === "dark");
@@ -509,6 +528,26 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(updateQuote, 3600000);
   updateClock(); // Set initial digital time
   requestAnimationFrame(runClock); // Start smooth loop
+
+  // Update system time every 100ms for smooth display
+  function updateSystemTime() {
+    const date = new Date();
+    const realHours = date.getHours();
+    const realMinutes = date.getMinutes();
+    const realSeconds = date.getSeconds();
+    const milliseconds = date.getMilliseconds();
+    document.getElementById("systemTime").textContent = `${realHours
+      .toString()
+      .padStart(2, "0")}:${realMinutes
+      .toString()
+      .padStart(2, "0")}:${realSeconds
+      .toString()
+      .padStart(2, "0")}.${Math.floor(milliseconds / 10)
+      .toString()
+      .padStart(2, "0")}`;
+  }
+  updateSystemTime(); // Set initial system time
+  setInterval(updateSystemTime, 100);
 
   const savedLat = localStorage.getItem("latitude");
   const savedLon = localStorage.getItem("longitude");
@@ -591,4 +630,32 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error in resetLocationBtn handler:", error);
     }
   });
+
+  document.getElementById("applySyncBtn").addEventListener("click", () => {
+    try {
+      applyTimeSync();
+    } catch (error) {
+      console.error("Error in applySyncBtn handler:", error);
+    }
+  });
+
+  document.getElementById("syncInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      try {
+        applyTimeSync();
+      } catch (error) {
+        console.error("Error in syncInput handler:", error);
+      }
+    }
+  });
+
+  function applyTimeSync() {
+    const syncInput = document.getElementById("syncInput");
+    const value = parseInt(syncInput.value, 10);
+    if (!isNaN(value)) {
+      timeOffsetNs = value;
+      localStorage.setItem("leetClockSync", value.toString());
+      updateClock();
+    }
+  }
 });

@@ -87,6 +87,8 @@
       <button id="resetLocationBtn" aria-label="Reset location to default">
         Reset Location
       </button>
+      <input type="number" id="syncInput" placeholder="Sync (ns)" step="1" />
+      <button id="applySyncBtn" aria-label="Apply time sync">Sync</button>
     </div>
     <svg id="leetClock" viewBox="0 0 400 400">
       <circle
@@ -137,6 +139,7 @@
       <circle cx="200" cy="200" r="10" fill="lime" stroke="none" />
     </svg>
     <div id="digital"></div>
+    <div id="systemTime"></div>
     <audio id="sound"></audio>
     <script src="script.js"></script>
   </body>

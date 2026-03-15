@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const y = centerY + hourRadius * Math.sin(angle);
         const text = document.createElementNS(
           "http://www.w3.org/2000/svg",
-          "text"
+          "text",
         );
         text.setAttribute("x", x);
         text.setAttribute("y", y);
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const y = centerY + minuteRadius * Math.sin(angle);
         const text = document.createElementNS(
           "http://www.w3.org/2000/svg",
-          "text"
+          "text",
         );
         text.setAttribute("x", x);
         text.setAttribute("y", y);
@@ -134,14 +134,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function getSecondsSinceMidnight() {
-    const now = new Date();
-    return (
-      now.getHours() * 3600 +
-      now.getMinutes() * 60 +
-      now.getSeconds() +
-      now.getMilliseconds() / 1000
-    );
+  function getSecondsSinceMidnight(nowMs = Date.now()) {
+    return (nowMs / 1000) % EARTH_DAY_SECONDS;
   }
 
   function getModeTime() {
@@ -175,10 +169,10 @@ document.addEventListener("DOMContentLoaded", () => {
       let relativeHourLength = periodLength / 12;
       hours = Math.floor(elapsed / relativeHourLength);
       minutes = Math.floor(
-        (elapsed % relativeHourLength) / (relativeHourLength / 60)
+        (elapsed % relativeHourLength) / (relativeHourLength / 60),
       );
       seconds = Math.floor(
-        (elapsed % (relativeHourLength / 60)) / (relativeHourLength / 3600)
+        (elapsed % (relativeHourLength / 60)) / (relativeHourLength / 3600),
       );
       fraction =
         (elapsed % (relativeHourLength / 3600)) / (relativeHourLength / 3600);
@@ -279,10 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return duration * (1 - (time.fraction % 1));
   }
 
-  function getSecondsSinceMidnight(nowMs = Date.now()) {
-    return (nowMs / 1000) % EARTH_DAY_SECONDS;
-  }
-
   function updateClock(time = null) {
     try {
       if (!time) time = getModeTime();
@@ -316,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
         settings.label
       }: ${toHex(time.hours).padStart(2, "0")}:${toHex(time.minutes).padStart(
         2,
-        "0"
+        "0",
       )}${
         showSeconds ? `:${toHex(time.displaySeconds).padStart(2, "0")}` : ""
       }${
@@ -372,7 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
       root.style.setProperty("--bg-color", isDark ? "black" : "white");
       root.style.setProperty(
         "--text-color",
-        isDark ? "lime" : "var(--text-color-light)"
+        isDark ? "lime" : "var(--text-color-light-mode)",
       );
       localStorage.setItem("leetClockTheme", isDark ? "dark" : "light");
     } catch (error) {
@@ -436,9 +426,8 @@ document.addEventListener("DOMContentLoaded", () => {
       mode = modes[(currentIndex + 1) % modes.length];
       localStorage.setItem("leetClockMode", mode);
       drawLabels(modeSettings[mode].hours, modeSettings[mode].minutes);
-      document.getElementById(
-        "toggleMode"
-      ).textContent = `Mode: ${modeSettings[mode].label}`;
+      document.getElementById("toggleMode").textContent =
+        `Mode: ${modeSettings[mode].label}`;
       applyVisualEffects(mode);
 
       const secondHand = document.getElementById("secondHand");
@@ -483,9 +472,8 @@ document.addEventListener("DOMContentLoaded", () => {
     mode = savedMode;
   }
   drawLabels(modeSettings[mode].hours, modeSettings[mode].minutes);
-  document.getElementById(
-    "toggleMode"
-  ).textContent = `Mode: ${modeSettings[mode].label}`;
+  document.getElementById("toggleMode").textContent =
+    `Mode: ${modeSettings[mode].label}`;
 
   const secondHand = document.getElementById("secondHand");
   const duration = Math.min(secondDurations[mode] / 1000, 5);
@@ -511,7 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       (error) => {
         console.warn("Geolocation error:", error);
-      }
+      },
     );
   } else {
     console.warn("Geolocation not supported.");
@@ -563,7 +551,7 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("longitude", longitude);
             updateClock();
           },
-          (error) => alert("Failed to get location: " + error.message)
+          (error) => alert("Failed to get location: " + error.message),
         );
       } else {
         alert("Geolocation not supported.");

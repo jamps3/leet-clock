@@ -5,6 +5,7 @@
   --bg-color: black;
   --text-color: lime;
   --text-color-light: #333;
+  --text-color-light-mode: #1a1a1a;
 }
 
 /* Base font size for rem and em units */
@@ -53,7 +54,9 @@ body {
     rgba(0, 255, 0, 0.2) 0%,
     rgba(0, 0, 0, 1) 100%
   );
-  animation: pulse 5s infinite, colorShift 10s infinite;
+  animation:
+    pulse 5s infinite,
+    colorShift 10s infinite;
 }
 
 @keyframes colorShift {
@@ -121,11 +124,15 @@ svg circle[fill="lime"] {
 #hourHand,
 #secondHand {
   filter: drop-shadow(0 0 5px var(--text-color));
-  transition: x2 0.2s linear, y2 0.2s linear; /* Smooth transitions for all hands */
+  transition:
+    x2 0.2s linear,
+    y2 0.2s linear; /* Smooth transitions for all hands */
 }
 
 #secondHand {
-  transition: x2 1s linear, y2 1s linear; /* Default to Earth second; overridden in JS for modes */
+  transition:
+    x2 1s linear,
+    y2 1s linear; /* Default to Earth second; overridden in JS for modes */
 }
 
 @media (max-width: 768px) {
@@ -392,7 +399,9 @@ svg circle[stroke="lime"],
 svg line[stroke="lime"],
 svg text[fill="lime"],
 svg circle[fill="lime"] {
-  transition: stroke 0.3s, fill 0.3s;
+  transition:
+    stroke 0.3s,
+    fill 0.3s;
 }
 
 @keyframes bounce {
@@ -411,4 +420,15 @@ button {
 
 button:hover {
   transform: scale(1.04);
+}
+
+button:focus-visible,
+#toggleTheme:focus-visible,
+#toggleMode:focus-visible,
+#toggleSeconds:focus-visible,
+#locationControls button:focus-visible,
+#locationControls input:focus-visible,
+#locationControls select:focus-visible {
+  outline: 2px solid lime;
+  outline-offset: 2px;
 }

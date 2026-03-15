@@ -4,8 +4,8 @@
 :root {
   --bg-color: black;
   --text-color: lime;
-  --text-color-light: #333;
-  --text-color-light-mode: #1a1a1a;
+  --text-color-light: #eee;
+  --text-color-light-mode: #eee;
 }
 
 /* Base font size for rem and em units */
@@ -56,30 +56,18 @@ body {
   );
   animation:
     pulse 5s infinite,
-    colorShift 10s infinite;
+    hueShift 8s infinite ease-in-out;
 }
 
-@keyframes colorShift {
+@keyframes hueShift {
   0% {
-    background: radial-gradient(
-      circle,
-      rgba(0, 255, 0, 0.2) 0%,
-      rgba(0, 0, 0, 1) 100%
-    );
+    filter: hue-rotate(0deg) brightness(1);
   }
   50% {
-    background: radial-gradient(
-      circle,
-      rgba(255, 0, 255, 0.2) 0%,
-      rgba(0, 0, 0, 1) 100%
-    );
+    filter: hue-rotate(120deg) brightness(1.1);
   }
   100% {
-    background: radial-gradient(
-      circle,
-      rgba(0, 255, 0, 0.2) 0%,
-      rgba(0, 0, 0, 1) 100%
-    );
+    filter: hue-rotate(0deg) brightness(1);
   }
 }
 

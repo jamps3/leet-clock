@@ -73,21 +73,392 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
+  const defaultLocation = {
+    id: "helsinki",
+    name: "Helsinki",
+    latitude: 60.1699,
+    longitude: 24.9384,
+    timeZone: "Europe/Helsinki",
+  };
+
+  const cities = [
+    defaultLocation,
+    {
+      id: "stockholm",
+      name: "Stockholm",
+      latitude: 59.3293,
+      longitude: 18.0686,
+      timeZone: "Europe/Stockholm",
+    },
+    {
+      id: "berlin",
+      name: "Berlin",
+      latitude: 52.52,
+      longitude: 13.405,
+      timeZone: "Europe/Berlin",
+    },
+    {
+      id: "london",
+      name: "London",
+      latitude: 51.5074,
+      longitude: -0.1278,
+      timeZone: "Europe/London",
+    },
+    {
+      id: "new-york",
+      name: "New York",
+      latitude: 40.7128,
+      longitude: -74.006,
+      timeZone: "America/New_York",
+    },
+    {
+      id: "los-angeles",
+      name: "Los Angeles",
+      latitude: 34.0522,
+      longitude: -118.2437,
+      timeZone: "America/Los_Angeles",
+    },
+    {
+      id: "tokyo",
+      name: "Tokyo",
+      latitude: 35.6895,
+      longitude: 139.6917,
+      timeZone: "Asia/Tokyo",
+    },
+    {
+      id: "sydney",
+      name: "Sydney",
+      latitude: -33.8688,
+      longitude: 151.2093,
+      timeZone: "Australia/Sydney",
+    },
+    {
+      id: "abidjan",
+      name: "Abidjan",
+      latitude: 5.3453,
+      longitude: -4.0244,
+      timeZone: "Africa/Abidjan",
+    },
+    {
+      id: "ahmedabad",
+      name: "Ahmedabad",
+      latitude: 23.0225,
+      longitude: 72.5714,
+      timeZone: "Asia/Kolkata",
+    },
+    {
+      id: "alexandria",
+      name: "Alexandria",
+      latitude: 31.2001,
+      longitude: 29.9187,
+      timeZone: "Africa/Cairo",
+    },
+    {
+      id: "chennai",
+      name: "Chennai",
+      latitude: 13.0827,
+      longitude: 80.2707,
+      timeZone: "Asia/Kolkata",
+    },
+    {
+      id: "chengdu",
+      name: "Chengdu",
+      latitude: 30.5728,
+      longitude: 104.0668,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "kolkata",
+      name: "Kolkata",
+      latitude: 22.5726,
+      longitude: 88.3639,
+      timeZone: "Asia/Kolkata",
+    },
+    {
+      id: "chittagong",
+      name: "Chittagong",
+      latitude: 22.3569,
+      longitude: 91.7832,
+      timeZone: "Asia/Dhaka",
+    },
+    {
+      id: "chongqing",
+      name: "Chongqing",
+      latitude: 29.4316,
+      longitude: 106.9123,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "dar-es-salaam",
+      name: "Dar es Salaam",
+      latitude: -6.7924,
+      longitude: 39.2083,
+      timeZone: "Africa/Dar_es_Salaam",
+    },
+    {
+      id: "delhi",
+      name: "Delhi",
+      latitude: 28.7041,
+      longitude: 77.1025,
+      timeZone: "Asia/Kolkata",
+    },
+    {
+      id: "dongguan",
+      name: "Dongguan",
+      latitude: 23.0205,
+      longitude: 113.7518,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "addis-ababa",
+      name: "Addis Ababa",
+      latitude: 9.03,
+      longitude: 38.74,
+      timeZone: "Africa/Addis_Ababa",
+    },
+    {
+      id: "beijing",
+      name: "Beijing",
+      latitude: 39.9042,
+      longitude: 116.4074,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "belo-horizonte",
+      name: "Belo Horizonte",
+      latitude: -19.9167,
+      longitude: -43.9345,
+      timeZone: "America/Sao_Paulo",
+    },
+    {
+      id: "bogota",
+      name: "Bogota",
+      latitude: 4.711,
+      longitude: -74.0721,
+      timeZone: "America/Bogota",
+    },
+    {
+      id: "barcelona",
+      name: "Barcelona",
+      latitude: 41.3851,
+      longitude: 2.1734,
+      timeZone: "Europe/Madrid",
+    },
+    {
+      id: "buenos-aires",
+      name: "Buenos Aires",
+      latitude: -34.6037,
+      longitude: -58.3816,
+      timeZone: "America/Argentina/Buenos_Aires",
+    },
+    {
+      id: "cairo",
+      name: "Cairo",
+      latitude: 30.0444,
+      longitude: 31.2357,
+      timeZone: "Africa/Cairo",
+    },
+    {
+      id: "xian",
+      name: "Xi'an",
+      latitude: 34.3416,
+      longitude: 108.9398,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "bangalore",
+      name: "Bangalore",
+      latitude: 12.9716,
+      longitude: 77.5946,
+      timeZone: "Asia/Kolkata",
+    },
+    {
+      id: "tianjin",
+      name: "Tianjin",
+      latitude: 39.3434,
+      longitude: 117.3616,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "pune",
+      name: "Pune",
+      latitude: 18.5204,
+      longitude: 73.8567,
+      timeZone: "Asia/Kolkata",
+    },
+    {
+      id: "moscow",
+      name: "Moscow",
+      latitude: 55.7558,
+      longitude: 37.6173,
+      timeZone: "Europe/Moscow",
+    },
+    {
+      id: "mexico-city",
+      name: "Mexico City",
+      latitude: 19.4326,
+      longitude: -99.1332,
+      timeZone: "America/Mexico_City",
+    },
+    {
+      id: "mumbai",
+      name: "Mumbai",
+      latitude: 19.076,
+      longitude: 72.8777,
+      timeZone: "Asia/Kolkata",
+    },
+    {
+      id: "seoul",
+      name: "Seoul",
+      latitude: 37.5665,
+      longitude: 126.978,
+      timeZone: "Asia/Seoul",
+    },
+    {
+      id: "guangzhou",
+      name: "Guangzhou",
+      latitude: 23.1291,
+      longitude: 113.2644,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "guadalajara",
+      name: "Guadalajara",
+      latitude: 20.6597,
+      longitude: -103.3496,
+      timeZone: "America/Mexico_City",
+    },
+    {
+      id: "hangzhou",
+      name: "Hangzhou",
+      latitude: 30.2741,
+      longitude: 120.1551,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "hyderabad",
+      name: "Hyderabad",
+      latitude: 17.385,
+      longitude: 78.4867,
+      timeZone: "Asia/Kolkata",
+    },
+    {
+      id: "bangkok",
+      name: "Bangkok",
+      latitude: 13.7563,
+      longitude: 100.5018,
+      timeZone: "Asia/Bangkok",
+    },
+    {
+      id: "jakarta",
+      name: "Jakarta",
+      latitude: -6.2088,
+      longitude: 106.8456,
+      timeZone: "Asia/Jakarta",
+    },
+    {
+      id: "qingdao",
+      name: "Qingdao",
+      latitude: 36.0662,
+      longitude: 120.3826,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "lagos",
+      name: "Lagos",
+      latitude: 6.5244,
+      longitude: 3.3792,
+      timeZone: "Africa/Lagos",
+    },
+    {
+      id: "osaka",
+      name: "Osaka",
+      latitude: 34.6937,
+      longitude: 135.5023,
+      timeZone: "Asia/Tokyo",
+    },
+    {
+      id: "santiago",
+      name: "Santiago",
+      latitude: -33.4489,
+      longitude: -70.6693,
+      timeZone: "America/Santiago",
+    },
+    {
+      id: "sao-paulo",
+      name: "Sao Paulo",
+      latitude: -23.5505,
+      longitude: -46.6333,
+      timeZone: "America/Sao_Paulo",
+    },
+    {
+      id: "karachi",
+      name: "Karachi",
+      latitude: 24.8607,
+      longitude: 67.0011,
+      timeZone: "Asia/Karachi",
+    },
+    {
+      id: "riyadh",
+      name: "Riyadh",
+      latitude: 24.7136,
+      longitude: 46.6753,
+      timeZone: "Asia/Riyadh",
+    },
+    {
+      id: "hong-kong",
+      name: "Hong Kong",
+      latitude: 22.3193,
+      longitude: 114.1694,
+      timeZone: "Asia/Hong_Kong",
+    },
+    {
+      id: "foshan",
+      name: "Foshan",
+      latitude: 23.0215,
+      longitude: 113.749,
+      timeZone: "Asia/Shanghai",
+    },
+    {
+      id: "surat",
+      name: "Surat",
+      latitude: 21.1702,
+      longitude: 72.8311,
+      timeZone: "Asia/Kolkata",
+    },
+    {
+      id: "tehran",
+      name: "Tehran",
+      latitude: 35.6892,
+      longitude: 51.389,
+      timeZone: "Asia/Tehran",
+    },
+    {
+      id: "ho-chi-minh-city",
+      name: "Ho Chi Minh City",
+      latitude: 10.7769,
+      longitude: 106.7009,
+      timeZone: "Asia/Ho_Chi_Minh",
+    },
+  ];
+
   const labelGroup = document.getElementById("labels");
   const SATA_CYCLE_SECONDS = 100 * 100 * 100;
   const EARTH_DAY_SECONDS = 86400;
   const MARTIAN_DAY_SECONDS = 88775;
-
-  const secondDurations = {
-    leet: (EARTH_DAY_SECONDS / (13 * 37 * 37)) * 1000, // ~2337ms
-    real: 1000,
-    real24: 1000,
-    sata: (EARTH_DAY_SECONDS / SATA_CYCLE_SECONDS) * 1000, // ~864ms
-    relative: 1000, // Dynamic
-    binary: (EARTH_DAY_SECONDS / (16 * 64 * 64)) * 1000, // ~1322ms
-    martian: (MARTIAN_DAY_SECONDS / (24 * 60 * 60)) * 1000, // ~1479ms
-    hex: (EARTH_DAY_SECONDS / (16 * 16 * 16)) * 1000, // ~33750ms
+  const clockFace = document.querySelector("svg circle[stroke='lime']");
+  const centerDot = document.querySelector("svg circle[fill='lime']");
+  const digitalDisplay = document.getElementById("digital");
+  const handElements = {
+    hour: document.getElementById("hourHand"),
+    minute: document.getElementById("minuteHand"),
+    second: document.getElementById("secondHand"),
   };
+  let lastDigitalText = "";
+  let lastDisplaySecond = null;
+  let lastAppliedMode = "";
+  let civilFormatterTimeZone = "";
+  let civilFormatter = null;
 
   function drawLabels(hourCount, minuteCount) {
     try {
@@ -135,15 +506,66 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function getSecondsSinceMidnight(nowMs = Date.now()) {
-    return (nowMs / 1000) % EARTH_DAY_SECONDS;
+  function getSelectedInstantMs() {
+    return Date.now() + timeOffsetNs / 1e6;
+  }
+
+  function getCivilParts(instantMs = getSelectedInstantMs()) {
+    const date = new Date(instantMs);
+    const timeZone = window.userLocation?.timeZone;
+
+    if (!timeZone) {
+      return {
+        hours: date.getHours(),
+        minutes: date.getMinutes(),
+        seconds: date.getSeconds(),
+        milliseconds: date.getMilliseconds(),
+      };
+    }
+
+    if (timeZone !== civilFormatterTimeZone) {
+      civilFormatterTimeZone = timeZone;
+      civilFormatter = new Intl.DateTimeFormat("en-US", {
+        timeZone,
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    }
+
+    const parts = Object.fromEntries(
+      civilFormatter.formatToParts(date).map((part) => [part.type, part.value]),
+    );
+    const hours = Number(parts.hour) % 24;
+
+    return {
+      hours,
+      minutes: Number(parts.minute),
+      seconds: Number(parts.second),
+      milliseconds: date.getMilliseconds(),
+    };
+  }
+
+  function getCivilSecondsSinceMidnight(instantMs = getSelectedInstantMs()) {
+    const parts = getCivilParts(instantMs);
+    return (
+      parts.hours * 3600 +
+      parts.minutes * 60 +
+      parts.seconds +
+      parts.milliseconds / 1000
+    );
+  }
+
+  function getLocation() {
+    return window.userLocation || defaultLocation;
   }
 
   function getModeTime() {
     const settings = modeSettings[mode];
-    const now = new Date();
-    const nowMs = now.getTime() + timeOffsetNs / 1e6; // Unified time source with offset
-    const earthSeconds = getSecondsSinceMidnight(nowMs);
+    const nowMs = getSelectedInstantMs();
+    const civilParts = getCivilParts(nowMs);
+    const earthSeconds = getCivilSecondsSinceMidnight(nowMs);
     let hours, minutes, seconds, fraction, displaySeconds;
 
     if (mode === "sata") {
@@ -156,8 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
       minutes = Math.floor(seconds / 100) % 100;
       seconds = seconds % 100;
     } else if (mode === "relative") {
-      let latitude = window.userLocation?.latitude || 60.1699;
-      let longitude = window.userLocation?.longitude || 24.9384;
+      const { latitude, longitude } = getLocation();
       const times = SunCalc.getTimes(new Date(nowMs), latitude, longitude);
       const sunrise = times.sunrise.getTime();
       const sunset = times.sunset.getTime();
@@ -179,25 +600,24 @@ document.addEventListener("DOMContentLoaded", () => {
         (elapsed % (relativeHourLength / 3600)) / (relativeHourLength / 3600);
       displaySeconds = Math.round(seconds + fraction) % 60;
     } else if (mode === "real") {
-      hours = now.getHours() % 12 || 12;
-      minutes = now.getMinutes();
-      seconds = Math.floor(nowMs / 1000) % 60;
-      fraction = (nowMs % 1000) / 1000;
+      hours = civilParts.hours % 12 || 12;
+      minutes = civilParts.minutes;
+      seconds = civilParts.seconds;
+      fraction = civilParts.milliseconds / 1000;
       displaySeconds = seconds;
     } else if (mode === "real24") {
-      hours = now.getHours();
-      minutes = now.getMinutes();
-      seconds = Math.floor(nowMs / 1000) % 60;
-      fraction = (nowMs % 1000) / 1000;
+      hours = civilParts.hours;
+      minutes = civilParts.minutes;
+      seconds = civilParts.seconds;
+      fraction = civilParts.milliseconds / 1000;
       displaySeconds = seconds;
     } else if (mode === "martian") {
       const martianSeconds =
-        earthSeconds * (MARTIAN_DAY_SECONDS / EARTH_DAY_SECONDS);
-      const totalMinutes = martianSeconds / 3600;
-      hours = Math.floor(totalMinutes / 60) % 24;
-      minutes = Math.floor(totalMinutes % 60);
-      seconds = Math.floor((martianSeconds % 3600) / 60);
-      fraction = (martianSeconds % 60) / 60;
+        earthSeconds * (EARTH_DAY_SECONDS / MARTIAN_DAY_SECONDS);
+      hours = Math.floor(martianSeconds / 3600) % 24;
+      minutes = Math.floor((martianSeconds % 3600) / 60);
+      seconds = Math.floor(martianSeconds % 60);
+      fraction = martianSeconds % 1;
       displaySeconds = Math.round(seconds + fraction) % 60;
     } else {
       const offset = settings.offset || 0;
@@ -219,6 +639,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return { hours, minutes, seconds, fraction, displaySeconds };
   }
 
+  function initializeClockGeometry() {
+    handElements.minute.setAttribute("stroke-width", (0.75 / 100) * 400);
+    handElements.hour.setAttribute("stroke-width", (1.5 / 100) * 400);
+    handElements.second.setAttribute("stroke-width", (0.25 / 100) * 400);
+    clockFace.setAttribute("stroke-width", (1 / 100) * 400);
+    centerDot.setAttribute("r", (2.5 / 100) * 400);
+  }
+
   function updateClockHands(time) {
     const settings = modeSettings[mode];
     const secondCount = settings.seconds;
@@ -232,78 +660,38 @@ document.addEventListener("DOMContentLoaded", () => {
         (time.seconds + time.fraction) / (settings.minutes * secondCount)) *
       (360 / settings.hours);
 
-    setHand("secondHand", secondAngle, 45);
-    setHand("minuteHand", minuteAngle, 39);
-    setHand("hourHand", hourAngle, 25);
+    setHand(handElements.second, secondAngle, 45);
+    setHand(handElements.minute, minuteAngle, 39);
+    setHand(handElements.hour, hourAngle, 25);
   }
 
-  function setHand(id, angleDeg, lengthPercentage) {
+  function setHand(hand, angleDeg, lengthPercentage) {
     const length = (lengthPercentage / 100) * 400;
     const angleRad = (angleDeg - 90) * (Math.PI / 180);
     const x2 = centerX + length * Math.cos(angleRad);
     const y2 = centerY + length * Math.sin(angleRad);
-    const hand = document.getElementById(id);
     if (!hand) {
-      console.error(`Hand element with ID ${id} not found`);
+      console.error("Clock hand element not found");
       return;
     }
     hand.setAttribute("x2", x2);
     hand.setAttribute("y2", y2);
   }
 
-  function timeToNextSecond(time) {
-    if (mode === "relative") {
-      const nowMs = Date.now() + timeOffsetNs / 1e6;
-      const latitude = window.userLocation?.latitude || 60.1699;
-      const longitude = window.userLocation?.longitude || 24.9384;
-      const times = SunCalc.getTimes(new Date(nowMs), latitude, longitude);
-      const sunrise = times.sunrise.getTime();
-      const sunset = times.sunset.getTime();
-      const msInDay = 24 * 60 * 60 * 1000;
-      const isDaytime = nowMs >= sunrise && nowMs < sunset;
-      const periodStart = isDaytime ? sunrise : sunset;
-      const periodEnd = isDaytime ? sunset : sunrise + msInDay;
-      const periodLength = periodEnd - periodStart;
-      const relativeHourLength = periodLength / 12;
-      const relativeSecondLength = relativeHourLength / (60 * 60);
-      const elapsed = (nowMs - periodStart + msInDay) % msInDay;
-      const secondsElapsed = elapsed / relativeSecondLength;
-      return relativeSecondLength * (1 - (secondsElapsed % 1));
-    }
-    const duration = secondDurations[mode];
-    return duration * (1 - (time.fraction % 1));
-  }
-
   function updateClock(time = null) {
     try {
       if (!time) time = getModeTime();
-      const date = new Date();
-      const realHours = date.getHours();
-      const realMinutes = date.getMinutes();
-      const realSeconds = date.getSeconds();
+      const civilParts = getCivilParts();
+      const realHours = civilParts.hours;
+      const realMinutes = civilParts.minutes;
+      const realSeconds = civilParts.seconds;
 
       updateClockHands(time);
-
-      document
-        .getElementById("minuteHand")
-        .setAttribute("stroke-width", (0.75 / 100) * 400);
-      document
-        .getElementById("hourHand")
-        .setAttribute("stroke-width", (1.5 / 100) * 400);
-      document
-        .getElementById("secondHand")
-        .setAttribute("stroke-width", (0.25 / 100) * 400);
-      document
-        .querySelector("svg circle[stroke='lime']")
-        .setAttribute("stroke-width", (1 / 100) * 400);
-      document
-        .querySelector("svg circle[fill='lime']")
-        .setAttribute("r", (2.5 / 100) * 400);
 
       const settings = modeSettings[mode];
       const toHex = (num) =>
         mode === "hex" ? num.toString(16).toUpperCase() : num.toString();
-      document.getElementById("digital").textContent = `${
+      const digitalText = `${
         settings.label
       }: ${toHex(time.hours).padStart(2, "0")}:${toHex(time.minutes).padStart(
         2,
@@ -318,16 +706,34 @@ document.addEventListener("DOMContentLoaded", () => {
           : ""
       }`;
 
-      if (realHours === 13 && realMinutes === 37 && realSeconds === 0) {
+      if (digitalText !== lastDigitalText) {
+        digitalDisplay.textContent = digitalText;
+        lastDigitalText = digitalText;
+      }
+
+      const displaySecondKey = `${mode}:${time.displaySeconds}`;
+      if (
+        realHours === 13 &&
+        realMinutes === 37 &&
+        realSeconds === 0 &&
+        displaySecondKey !== lastDisplaySecond
+      ) {
         const sound = document.getElementById("sound");
         if (!sound.src) {
           sound.src = "leet.wav";
         }
-        sound.play();
+        sound.play().catch((error) => {
+          console.warn("Unable to play achievement sound:", error);
+        });
         document.getElementById("quote").textContent =
-          "🎉 13:37 Achieved! Stay leet. 🎉";
+          "13:37 Achieved! Stay leet.";
       }
-      applyVisualEffects(mode);
+      lastDisplaySecond = displaySecondKey;
+
+      if (mode !== lastAppliedMode) {
+        applyVisualEffects(mode);
+        lastAppliedMode = mode;
+      }
     } catch (error) {
       console.error("Error in updateClock:", error);
     }
@@ -336,18 +742,29 @@ document.addEventListener("DOMContentLoaded", () => {
   function runClock() {
     const time = getModeTime();
     updateClock(time);
-    const nextUpdate = timeToNextSecond(time);
 
-    // Check if offset changed and force refresh if needed
-    if (timeOffsetNs !== runClock.lastOffset) {
+    // Check if offset or location changed and force refresh if needed
+    const currentLat = window.userLocation?.latitude || 0;
+    const currentLon = window.userLocation?.longitude || 0;
+    const currentTimeZone = window.userLocation?.timeZone || "";
+    if (
+      timeOffsetNs !== runClock.lastOffset ||
+      currentLat !== runClock.lastLat ||
+      currentLon !== runClock.lastLon ||
+      currentTimeZone !== runClock.lastTimeZone
+    ) {
       runClock.lastOffset = timeOffsetNs;
-      requestAnimationFrame(runClock);
-      return;
+      runClock.lastLat = currentLat;
+      runClock.lastLon = currentLon;
+      runClock.lastTimeZone = currentTimeZone;
     }
 
-    setTimeout(() => requestAnimationFrame(runClock), nextUpdate);
+    requestAnimationFrame(runClock);
   }
   runClock.lastOffset = 0;
+  runClock.lastLat = 0;
+  runClock.lastLon = 0;
+  runClock.lastTimeZone = "";
 
   function updateQuote() {
     try {
@@ -374,10 +791,110 @@ document.addEventListener("DOMContentLoaded", () => {
         "--text-color",
         isDark ? "lime" : "var(--text-color-light-mode)",
       );
+      root.style.setProperty(
+        "--panel-bg",
+        isDark ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.75)",
+      );
+      root.style.setProperty(
+        "--glow-color",
+        isDark ? "rgba(0, 255, 0, 0.2)" : "rgba(0, 130, 0, 0.14)",
+      );
+      root.style.setProperty(
+        "--clock-face-bg",
+        isDark ? "rgba(0, 0, 0, 1)" : "rgba(255, 255, 255, 1)",
+      );
+      root.style.setProperty(
+        "--clock-face-mid",
+        isDark ? "rgba(0, 255, 0, 0.1)" : "rgba(0, 130, 0, 0.08)",
+      );
+      root.style.setProperty(
+        "--clock-face-edge",
+        isDark ? "rgba(0, 255, 0, 0.06)" : "rgba(0, 130, 0, 0.05)",
+      );
+      root.style.setProperty(
+        "--background-edge",
+        isDark ? "rgba(0, 0, 0, 1)" : "rgba(255, 255, 255, 1)",
+      );
       localStorage.setItem("leetClockTheme", isDark ? "dark" : "light");
     } catch (error) {
       console.error("Error in setTheme:", error);
     }
+  }
+
+  function populateCitySelect() {
+    const citySelect = document.getElementById("citySelect");
+    cities.forEach((city) => {
+      const option = document.createElement("option");
+      option.value = city.id;
+      option.textContent = `${city.name} (${city.timeZone})`;
+      citySelect.appendChild(option);
+    });
+  }
+
+  function setLocation(location, persist = true) {
+    window.userLocation = location;
+    civilFormatterTimeZone = "";
+    civilFormatter = null;
+    document.getElementById("latInput").value = location.latitude;
+    document.getElementById("lonInput").value = location.longitude;
+    document.getElementById("citySelect").value = location.id || "";
+
+    if (!persist) return;
+
+    localStorage.setItem("latitude", location.latitude);
+    localStorage.setItem("longitude", location.longitude);
+    if (location.id) {
+      localStorage.setItem("cityId", location.id);
+    } else {
+      localStorage.removeItem("cityId");
+    }
+    if (location.timeZone) {
+      localStorage.setItem("timeZone", location.timeZone);
+    } else {
+      localStorage.removeItem("timeZone");
+    }
+    localStorage.removeItem("utcOffset");
+  }
+
+  function loadSavedLocation() {
+    const savedCityId = localStorage.getItem("cityId");
+    const savedCity = cities.find((city) => city.id === savedCityId);
+
+    if (savedCity) {
+      setLocation(savedCity, false);
+      return;
+    }
+
+    const savedLat = localStorage.getItem("latitude");
+    const savedLon = localStorage.getItem("longitude");
+    const savedTimeZone = localStorage.getItem("timeZone");
+
+    if (savedLat && savedLon) {
+      const lat = parseFloat(savedLat);
+      const lon = parseFloat(savedLon);
+      const matchingCity = cities.find(
+        (city) =>
+          Math.abs(city.latitude - lat) < 0.0001 &&
+          Math.abs(city.longitude - lon) < 0.0001,
+      );
+
+      if (matchingCity) {
+        setLocation(matchingCity, false);
+        return;
+      }
+
+      setLocation(
+        {
+          latitude: lat,
+          longitude: lon,
+          timeZone: savedTimeZone || undefined,
+        },
+        false,
+      );
+      return;
+    }
+
+    setLocation(defaultLocation, false);
   }
 
   function applyVisualEffects(currentMode) {
@@ -439,10 +956,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("toggleMode").textContent =
         `Mode: ${modeSettings[mode].label}`;
       applyVisualEffects(mode);
-
-      const secondHand = document.getElementById("secondHand");
-      const duration = Math.min(secondDurations[mode] / 1000, 5);
-      secondHand.style.transition = `x2 ${duration}s linear, y2 ${duration}s linear`;
+      lastAppliedMode = mode;
 
       updateClock();
     } catch (error) {
@@ -485,11 +999,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("toggleMode").textContent =
     `Mode: ${modeSettings[mode].label}`;
 
-  const secondHand = document.getElementById("secondHand");
-  const duration = Math.min(secondDurations[mode] / 1000, 5);
-  secondHand.style.transition = `x2 ${duration}s linear, y2 ${duration}s linear`;
-
+  initializeClockGeometry();
   applyVisualEffects(mode);
+  lastAppliedMode = mode;
 
   const savedSync = localStorage.getItem("leetClockSync");
   if (savedSync) {
@@ -507,67 +1019,23 @@ document.addEventListener("DOMContentLoaded", () => {
     setTheme(true);
   }
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        window.userLocation = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        };
-        updateClock();
-      },
-      (error) => {
-        console.warn("Geolocation error:", error);
-      },
-    );
-  } else {
-    console.warn("Geolocation not supported.");
-  }
+  populateCitySelect();
+  loadSavedLocation();
 
   updateQuote();
   setInterval(updateQuote, 3600000);
   updateClock(); // Set initial digital time
   requestAnimationFrame(runClock); // Start smooth loop
 
-  // Update system time every 100ms for smooth display
-  function updateSystemTime() {
-    const date = new Date();
-    const realHours = date.getHours();
-    const realMinutes = date.getMinutes();
-    const realSeconds = date.getSeconds();
-    const milliseconds = date.getMilliseconds();
-    document.getElementById("systemTime").textContent = `${realHours
-      .toString()
-      .padStart(2, "0")}:${realMinutes
-      .toString()
-      .padStart(2, "0")}:${realSeconds
-      .toString()
-      .padStart(2, "0")}.${Math.floor(milliseconds / 10)
-      .toString()
-      .padStart(2, "0")}`;
-  }
-  updateSystemTime(); // Set initial system time
-  setInterval(updateSystemTime, 100);
-
-  const savedLat = localStorage.getItem("latitude");
-  const savedLon = localStorage.getItem("longitude");
-  if (savedLat && savedLon) {
-    window.userLocation = {
-      latitude: parseFloat(savedLat),
-      longitude: parseFloat(savedLon),
-    };
-    document.getElementById("latInput").value = savedLat;
-    document.getElementById("lonInput").value = savedLon;
-  }
-
   document.getElementById("setLocationBtn").addEventListener("click", () => {
     try {
       const lat = parseFloat(document.getElementById("latInput").value);
       const lon = parseFloat(document.getElementById("lonInput").value);
       if (!isNaN(lat) && !isNaN(lon)) {
-        window.userLocation = { latitude: lat, longitude: lon };
-        localStorage.setItem("latitude", lat);
-        localStorage.setItem("longitude", lon);
+        setLocation({
+          latitude: lat,
+          longitude: lon,
+        });
         updateClock();
       } else {
         alert("Please enter valid coordinates.");
@@ -583,11 +1051,10 @@ document.addEventListener("DOMContentLoaded", () => {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
-            window.userLocation = { latitude, longitude };
-            document.getElementById("latInput").value = latitude.toFixed(4);
-            document.getElementById("lonInput").value = longitude.toFixed(4);
-            localStorage.setItem("latitude", latitude);
-            localStorage.setItem("longitude", longitude);
+            setLocation({
+              latitude: Number(latitude.toFixed(4)),
+              longitude: Number(longitude.toFixed(4)),
+            });
             updateClock();
           },
           (error) => alert("Failed to get location: " + error.message),
@@ -604,12 +1071,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const val = e.target.value;
       if (val) {
-        const [lat, lon] = val.split(",").map(Number);
-        document.getElementById("latInput").value = lat;
-        document.getElementById("lonInput").value = lon;
-        window.userLocation = { latitude: lat, longitude: lon };
-        localStorage.setItem("latitude", lat);
-        localStorage.setItem("longitude", lon);
+        const city = cities.find((item) => item.id === val);
+        if (!city) return;
+        setLocation(city);
         updateClock();
       }
     } catch (error) {
@@ -619,12 +1083,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("resetLocationBtn").addEventListener("click", () => {
     try {
-      window.userLocation = { latitude: 60.1699, longitude: 24.9384 };
-      localStorage.removeItem("latitude");
-      localStorage.removeItem("longitude");
-      document.getElementById("latInput").value = "";
-      document.getElementById("lonInput").value = "";
-      document.getElementById("citySelect").value = "";
+      setLocation(defaultLocation);
       updateClock();
     } catch (error) {
       console.error("Error in resetLocationBtn handler:", error);

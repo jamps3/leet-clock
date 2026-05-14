@@ -22,61 +22,9 @@
     </button>
     <div id="quote"></div>
     <div id="locationControls">
-      <label>Location:</label>
+      <label for="citySelect">Location:</label>
       <select id="citySelect">
         <option value="">-- Choose City --</option>
-        <option value="60.1699,24.9384">Helsinki</option>
-        <option value="59.3293,18.0686">Stockholm</option>
-        <option value="52.5200,13.4050">Berlin</option>
-        <option value="51.5074,-0.1278">London</option>
-        <option value="40.7128,-74.0060">New York</option>
-        <option value="34.0522,-118.2437">Los Angeles</option>
-        <option value="35.6895,139.6917">Tokyo</option>
-        <option value="-33.8688,151.2093">Sydney</option>
-        <option value="5.3453,-4.0244">Abidjan</option>
-        <option value="23.0225,72.5714">Ahmedabad</option>
-        <option value="31.2001,29.9187">Alexandria</option>
-        <option value="13.0827,80.2707">Chennai</option>
-        <option value="30.5728,104.0668">Chengdu</option>
-        <option value="22.5726,88.3639">Kolkata</option>
-        <option value="22.3569,91.7832">Chittagong</option>
-        <option value="29.4316,106.9123">Chongqing</option>
-        <option value="-6.7924,39.2083">Dar es Salaam</option>
-        <option value="28.7041,77.1025">Delhi</option>
-        <option value="23.0205,113.7518">Dongguan</option>
-        <option value="9.0300,38.7400">Addis Ababa</option>
-        <option value="39.9042,116.4074">Beijing</option>
-        <option value="-19.9167,-43.9345">Belo Horizonte</option>
-        <option value="4.7110,-74.0721">Bogotá</option>
-        <option value="41.3851,2.1734">Barcelona</option>
-        <option value="-34.6037,-58.3816">Buenos Aires</option>
-        <option value="30.0444,31.2357">Cairo</option>
-        <option value="34.3416,108.9398">Xi'an</option>
-        <option value="12.9716,77.5946">Bangalore</option>
-        <option value="39.3434,117.3616">Tianjin</option>
-        <option value="18.5204,73.8567">Pune</option>
-        <option value="55.7558,37.6173">Moscow</option>
-        <option value="19.4326,-99.1332">Mexico City</option>
-        <option value="19.0760,72.8777">Mumbai</option>
-        <option value="37.5665,126.9780">Seoul</option>
-        <option value="23.1291,113.2644">Guangzhou</option>
-        <option value="20.6597,-103.3496">Guadalajara</option>
-        <option value="30.2741,120.1551">Hangzhou</option>
-        <option value="17.3850,78.4867">Hyderabad</option>
-        <option value="13.7563,100.5018">Bangkok</option>
-        <option value="-6.2088,106.8456">Jakarta</option>
-        <option value="36.0662,120.3826">Qingdao</option>
-        <option value="6.5244,3.3792">Lagos</option>
-        <option value="34.6937,135.5023">Osaka</option>
-        <option value="-33.4489,-70.6693">Santiago</option>
-        <option value="-23.5505,-46.6333">São Paulo</option>
-        <option value="24.8607,67.0011">Karachi</option>
-        <option value="24.7136,46.6753">Riyadh</option>
-        <option value="22.3193,114.1694">Hong Kong</option>
-        <option value="23.0215,113.7490">Foshan</option>
-        <option value="21.1702,72.8311">Surat</option>
-        <option value="35.6892,51.3890">Tehran</option>
-        <option value="10.7769,106.7009">Ho Chi Minh City</option>
       </select>
       <input type="number" id="latInput" placeholder="Latitude" step="0.1" />
       <input type="number" id="lonInput" placeholder="Longitude" step="0.1" />
@@ -90,56 +38,57 @@
       <input type="number" id="syncInput" placeholder="Sync (ns)" step="1" />
       <button id="applySyncBtn" aria-label="Apply time sync">Sync</button>
     </div>
-    <svg id="leetClock" viewBox="0 0 400 400">
-      <circle
-        cx="200"
-        cy="200"
-        r="180"
-        stroke="lime"
-        stroke-width="4"
-        fill="none"
-      />
-      <g
-        id="labels"
-        fill="lime"
-        font-family="monospace"
-        text-anchor="middle"
-        dominant-baseline="middle"
-      ></g>
-      <line
-        id="minuteHand"
-        x1="200"
-        y1="200"
-        x2="200"
-        y2="50"
-        stroke="lime"
-        stroke-width="3"
-        fill="none"
-      />
-      <line
-        id="hourHand"
-        x1="200"
-        y1="200"
-        x2="200"
-        y2="100"
-        stroke="lime"
-        stroke-width="6"
-        fill="none"
-      />
-      <line
-        id="secondHand"
-        x1="200"
-        y1="200"
-        x2="200"
-        y2="30"
-        stroke="lime"
-        stroke-width="1"
-        fill="none"
-      />
-      <circle cx="200" cy="200" r="10" fill="lime" stroke="none" />
-    </svg>
+    <div class="clockShell">
+      <svg id="leetClock" viewBox="0 0 400 400" aria-label="Leet Clock">
+        <circle
+          cx="200"
+          cy="200"
+          r="180"
+          stroke="lime"
+          stroke-width="4"
+          fill="none"
+        />
+        <g
+          id="labels"
+          fill="lime"
+          font-family="monospace"
+          text-anchor="middle"
+          dominant-baseline="middle"
+        ></g>
+        <line
+          id="minuteHand"
+          x1="200"
+          y1="200"
+          x2="200"
+          y2="50"
+          stroke="lime"
+          stroke-width="3"
+          fill="none"
+        />
+        <line
+          id="hourHand"
+          x1="200"
+          y1="200"
+          x2="200"
+          y2="100"
+          stroke="lime"
+          stroke-width="6"
+          fill="none"
+        />
+        <line
+          id="secondHand"
+          x1="200"
+          y1="200"
+          x2="200"
+          y2="30"
+          stroke="lime"
+          stroke-width="1"
+          fill="none"
+        />
+        <circle cx="200" cy="200" r="10" fill="lime" stroke="none" />
+      </svg>
+    </div>
     <div id="digital"></div>
-    <div id="systemTime"></div>
     <audio id="sound"></audio>
     <script src="script.js"></script>
   </body>
